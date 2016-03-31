@@ -2,26 +2,40 @@
 import sys
 from bsddb3 import db
 
-DATABASE = "/tmp/doupton_db"
-INDEX = "/tmp/IndexFile"
+DATABASE = "/tmp/doupton_db/main.db"
+INDEXFILE = "/tmp/doupton_db/indexfile.db"
 
-def create_DB():
-    print("Creating DB...")
-    
+def create_DB( datatype ):
+    print("Creating Database...") 
+    database = db.DB()
+    second_database = db.DB()
+    try: 
+        database.open( DATABASE, None , datatype[0], db.DB_CREATE )
+        if datatype[1]:
+            second_database.open( INDEXFILE, None, datatype[1], db.DB_CREATE )
+    except:
+        print("Something went wrong")
+        return
 
-def get_withKey():
+    ##Test
+    curs = database.cursor()
+    curs.put( b'pear', 'green', db.DB_KEYFIRST )
+    print(curs.first())
+    database.close()
+
+def get_withKey( datatype ):
     print("Get with key")
     pass
  
-def get_withData():
+def get_withData( datatype ):
     print("Get with data")
     pass
 
-def get_withRange():
+def get_withRange( datatype ):
     print("Get with range")
     pass
 
-def demolish_DB():
+def demolish_DB( datatype ):
     print("Demolish DB")
     pass
 
@@ -53,6 +67,7 @@ def main():
     while True:
         showoptions()
         option = int(input("Enter option: "))
-        options[option]()
+        options[option]( datatype )
+    
 main()
 
