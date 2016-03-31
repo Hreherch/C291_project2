@@ -1,4 +1,6 @@
-#! /usr/bin/env python3
+#!/usr/bin/env python3
+import sys
+from bsddb3 import db
 
 # Global Macro for terminal sized new line feed.
 CLR_SCRN = chr(27) + "[2J"
@@ -118,12 +120,28 @@ def get_withRange():
 def demolish_DB():
     print( "create_DB called..." )
 
+def get_datatype():
+    datatype = sys.argv[1].lower()
+    if datatype == "btree":
+        datatype = (db.DB_BTREE, None)
+    elif datatype == "hash":
+        datatype = (db.DB_HASH, None)
+    elif datatype == 'indexfile':
+        datatype == (db.DB_BTREE, db.DB_HASH)
+    else:
+        return
+    return datatype
+
 # =============================================================================
 # Function:
 # =============================================================================
 #
 #    
 def main():
+    datatype = get_datatype()
+    print(datatype[0])
+    print(datatype[1])
+    
     print( "Initializing DBDB..." + CLR_SCRN )
     options = [ "Create/Populate DB", "Get With Key", "Get With Data", "Get With Range", "Destroy DB", "Quit" ]
     gotos = [ create_DB, get_withKey, get_withData, get_withRange, demolish_DB, quit ]
