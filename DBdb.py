@@ -124,6 +124,7 @@ def get_withRange( menu ):
 def demolish_DB( menu ):
     menu.info = "create_DB called..." 
 
+# Returns a tuple of (primary datatype, secondary datatype)
 def get_datatype():
     datatype = sys.argv[1].lower()
     if datatype == "btree":
@@ -143,8 +144,6 @@ def get_datatype():
 #    
 def main():
     datatype = get_datatype()
-    print(datatype[0])
-    print(datatype[1])
     
     print( "Initializing DBDB..." + CLR_SCRN )
     options = [ "Create/Populate DB", "Get With Key", "Get With Data", "Get With Range", "Destroy DB", "Quit" ]
