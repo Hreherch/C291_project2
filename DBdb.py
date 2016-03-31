@@ -37,7 +37,7 @@ class menuWidget:
         print()
          
     def __showMenu( self ):
-        print( CLR_SCRN )
+        #print( CLR_SCRN )
         self.__showHeader()
         if len( self.error ) > 0:
             print( "ERROR!".center( 80 ) )
@@ -75,7 +75,7 @@ class menuWidget:
             if not self.__verify():
                 continue
             else:
-                self.gotos[ self.grab ]()
+                self.gotos[ self.grab ]( self )
         
         
         
@@ -85,40 +85,44 @@ class menuWidget:
 # =============================================================================
 #
 #
-def create_DB():
-    print( "create_DB called..." )
+def create_DB( menu ):
+    menu.info = "create_DB called..." 
 
 # =============================================================================
 # Function:
 # =============================================================================
 #
 #    
-def get_withKey():
-    print( "get_withKey called..." )
+def get_withKey( menu ):
+    menu.info = "get_withKey called..."
  
 # =============================================================================
 # Function:
 # =============================================================================
 #
 # 
-def get_withData():
-    print( "get_withData called..." )
+def get_withData( menu ):
+    menu.info = "get_withData called..." 
 
 # =============================================================================
 # Function:
 # =============================================================================
 #
 #    
-def get_withRange():
-    print( "get_withRange called..." )
+def get_withRange( menu ):
+    menu.info = "get_withRange called..." 
+    while( True ):
+        # present data, wait here
+        a = input()
+        # "Hit enter to go back to main menu"
 
 # =============================================================================
 # Function:
 # =============================================================================
 #
 #
-def demolish_DB():
-    print( "create_DB called..." )
+def demolish_DB( menu ):
+    menu.info = "create_DB called..." 
 
 def get_datatype():
     datatype = sys.argv[1].lower()
