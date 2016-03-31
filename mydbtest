@@ -5,28 +5,79 @@ from bsddb3 import db
 DATABASE = "/tmp/doupton_db"
 INDEX = "/tmp/IndexFile"
 
+#=============================================================================
+# Function:
+#=============================================================================
+# args:
+#
+# wat do:
+#
 def create_DB():
     print("Creating DB...")
     
-
+#=============================================================================
+# Function:
+#=============================================================================
+# args:
+#
+# wat do:
+#
 def get_withKey():
     print("Get with key")
     pass
  
+#=============================================================================
+# Function:
+#=============================================================================
+# args:
+#
+# wat do:
+#
 def get_withData():
     print("Get with data")
     pass
 
+#=============================================================================
+# Function:
+#=============================================================================
+# args:
+#
+# wat do:
+#
 def get_withRange():
     print("Get with range")
     pass
 
+#=============================================================================
+# Function:
+#=============================================================================
+# args:
+#
+# wat do:
+#
 def demolish_DB():
     print("Demolish DB")
     pass
 
+#=============================================================================
+# Function:
+#=============================================================================
+# args:
+#
+# wat do:
+#
 # Returns a tuple of (primary datatype, secondary datatype)
 def get_datatype():
+    if len( sys.argv ) == 1:
+        errMsg = sys.argv[0] + ": No DB type specified\n" +\
+                 "Try '" + sys.argv[0] + " help' for more information.\n"
+        print( errMsg )
+        exit()
+    if len( sys.argv ) > 2:
+        errMsg = sys.argv[0] + ": too many options specified\n" +\
+                 "Try '" + sys.argv[0] + " help' for more information.\n"
+        print( errMsg )
+        exit()
     datatype = sys.argv[1].lower()
     if datatype == "btree":
         datatype = (db.DB_BTREE, None)
@@ -34,25 +85,65 @@ def get_datatype():
         datatype = (db.DB_HASH, None)
     elif datatype == 'indexfile':
         datatype == (db.DB_BTREE, db.DB_HASH)
+    elif datatype == "help":
+        helpMsg = "Usage: 'mydbtest OPTION'\n" +\
+                  "options: 'btree', 'hash', 'indexfile', 'help'\n"
+        print( helpMsg )
+        exit()
     else:
-        return
+        errMsg = sys.argv[0] + ": invalid option -- '" +\
+                 sys.argv[1] + "'\n" +\
+                 "Try '" + sys.argv[0] + " help' for more information.\n"
+        print( errMsg )
+        exit()
     return datatype
-
-def showoptions():
-    print(chr(27) + "[2J")
+    
+#=============================================================================
+# Function:
+#=============================================================================
+# args:
+#
+# wat do:
+#
+def showoptions( options ):
+    #print(chr(27) + "[2J")
     print( "=" * 80 )
     print( " =" * 40 )
-    print( "Menu title".center(80) )
+    print( "dbDB".center(80) )
     print( "= " * 40 )
-    print("\nOptions")
+    print()
+    for index in range( len( options ) ):
+        try:
+            optStr = "[" + str(index) + "]: " + str( options[index].__name__ )
+            print( optStr )
+        except:
+            optStr = "[" + str(index) + "]: Exit "
+            print( optStr )
 
+#=============================================================================
+# Function:
+#=============================================================================
+# args:
+#
+# wat do:
+#
 def main():
     options = [ create_DB, get_withKey, get_withData, \
                 get_withRange, demolish_DB, quit ]
     datatype = get_datatype()
     while True:
-        showoptions()
-        option = int(input("Enter option: "))
+        showoptions( options )
+        option = input("dbDB>")
+        # Ensure that the choice is an integer
+        try:
+            option = int( option )
+        except:
+            print( "Error:\t Choice must be an integer." )
+            continue
+        # Ensure that the choice is a valid choice
+        if option not in range( len(options) ):
+            print( "Error:\t You must choose one of the listed options." )
+            continue
         options[option]()
 main()
 
