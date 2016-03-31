@@ -1,9 +1,39 @@
 #!/usr/bin/env python3
 import sys
+import random
 from bsddb3 import db
 
 DATABASE = "/tmp/doupton_db/main.db"
 INDEXFILE = "/tmp/doupton_db/indexfile.db"
+DB_SIZE = 100000
+SEED = 1000000
+
+#Code taken from sample code in notes
+def populate( datebase ):
+    for index in range( DB_SIZE ):
+        krng = 64 + random.randint( 0, 63 )
+        key = ""
+        for i in range(krng):
+            key += str( chr( 97 + random.randint( 0, 25 ) ) )
+        vrng = 64 + random.randint( 0, 63 )
+        value = ""
+        for i in range(vrng):
+            value += str( chr( 97 + random.randint( 0, 25 ) ) )
+
+        key = key.encode( encoding="UTF-8" )
+        value = value.encode( encoding="UTF-8" )
+        database.put( key, value )
+
+    cur = database.cursor()
+    iter =  cur.first()
+    while iter:
+        print(iter[0].decode("UTF-8"))
+        print(iter[1].decode("UTF-8"))
+        print()
+        iter = cur.next()
+
+    database.close() 
+    
 
 #=============================================================================
 # Function:
@@ -13,22 +43,20 @@ INDEXFILE = "/tmp/doupton_db/indexfile.db"
 # wat do:
 #
 def create_DB( datatype ):
+        ##Remember to mkdir /tmp/doupton_db
     print("Creating Database...") 
-    database = db.DB()
-    second_database = db.DB()
     try: 
+        database = db.DB()
         database.open( DATABASE, None , datatype[0], db.DB_CREATE )
         if datatype[1]:
+            second_database = db.DB()
             second_database.open( INDEXFILE, None, datatype[1], db.DB_CREATE )
     except:
         print("Something went wrong")
         return
+    populate( datebase )
 
-    ##Test
-    curs = database.cursor()
-    curs.put( b'pear', 'green', db.DB_KEYFIRST )
-    print(curs.first())
-    database.close()
+    return database
     
 #=============================================================================
 # Function:
@@ -159,6 +187,6 @@ def main():
         if option not in range( len(options) ):
             print( "Error:\t You must choose one of the listed options." )
             continue
-        options[option]( datatype )
+
 main()
 
