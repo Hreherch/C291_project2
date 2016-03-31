@@ -120,20 +120,24 @@ def get_datatype():
 #
 # wat do:
 #
-def showoptions( options ):
+def showoptions():
     #print(chr(27) + "[2J")
     print( "=" * 80 )
     print( " =" * 40 )
     print( "dbDB".center(80) )
     print( "= " * 40 )
+    
     print()
+    
+    options = [ "Create/Populate Database", "Get with KEY", "Get with DATA", \
+                "Get with RANGE", "Demolish Database", "Exit" ]
+                
     for index in range( len( options ) ):
-        try:
-            optStr = "[" + str(index) + "]: " + str( options[index].__name__ )
-            print( optStr )
-        except:
-            optStr = "[" + str(index) + "]: Exit "
-            print( optStr )
+        optStr = "[" + str(index) + "]: " + options[index]
+        print( optStr )
+    
+    print()
+
 
 #=============================================================================
 # Function:
@@ -143,22 +147,32 @@ def showoptions( options ):
 # wat do:
 #
 def main():
-    options = [ create_DB, get_withKey, get_withData, \
-                get_withRange, demolish_DB, quit ]
     datatype = get_datatype()
+    database = None
     while True:
-        showoptions( options )
+        showoptions()
         option = input("dbDB>")
-        # Ensure that the choice is an integer
-        try:
-            option = int( option )
-        except:
-            print( "Error:\t Choice must be an integer." )
+        
+        if option == '0':
+            if database != None:
+                errMsg = "ERROR:\tThere is an active Database already.\n" +\
+                         "You cannot populate another without destroying it first."
+                print( errMsg )
+            database = create_DB( datatype )
+        elif option == '1':
             continue
-        # Ensure that the choice is a valid choice
-        if option not in range( len(options) ):
-            print( "Error:\t You must choose one of the listed options." )
+        elif option == '2':
             continue
-        options[option]( datatype )
+        elif option == '3':
+            continue
+        elif option == '4':
+            continue
+        elif option == '5':
+            exit()
+        else:
+            errMsg = "ERROR:\tYou must specify one of the options listed."
+            print( errMsg )
+            
+        
 main()
 
