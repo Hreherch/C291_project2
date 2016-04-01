@@ -165,16 +165,9 @@ def get_withRange( database ):
 # wat do:
 #
 def demolish_DB( database, indexfile ):
-    #empty = db.DB()
-    #if indexfile != None:
-    #    indexfile.close()
-    #if database != None:
-    #    database.close()
-    #else:
-    #    print( "Database already closed" )
-    #return None, None
-    os.system( "rm -rf /tmp/doupton_db" )
-    os.system( "mkdir /tmp/doupton_db" )
+    removeDB = db.DB()
+    removeDB.remove( DATABASE )
+    removeDB.close()
     return None, None
     
 
@@ -278,10 +271,18 @@ def main():
         
         # Get with DATA
         elif option == '2':
+            if database == None:
+                errMsg = "ERROR:\tYou must first create the database."
+                print( errMsg )
+                continue
             get_withData( database, indexfile )
         
         # Get with RANGE
         elif option == '3':
+            if database == None:
+                errMsg = "ERROR:\tYou must first create the database."
+                print( errMsg )
+                continue
             get_withRange( database )
             
         # Demolish Database
@@ -295,8 +296,9 @@ def main():
                 print( "Press any key to exit, press y to demolish before exiting." )
                 option = input( "Do you wish to demolish the DB?: " )
                 if option == 'y':
-                    continue                                                            #####You left this blank? I don't know what it does
-            break
+                    database, indexfile = demolish_DB( database, indexfile )
+            print()
+            exit()
         else:
             errMsg = "ERROR:\tYou must specify one of the options listed."
             print( errMsg )
