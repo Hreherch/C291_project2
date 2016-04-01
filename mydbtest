@@ -45,7 +45,7 @@ def create_DB( datatype ):
 
 #Code taken from sample code in notes
 def populate( database, indexfile ):
-    #for index in range( DB_SIZE ):
+    #for index in range( DB_SIZE ):                             ######Need to handle flags=db.DB_NOOVERWRITE
     #    krng = 64 + random.randint( 0, 63 )
     #    key = ""
     #    for i in range(krng):
@@ -59,18 +59,21 @@ def populate( database, indexfile ):
     #    value = value.encode( encoding="UTF-8" )
     #    database.put( key, value )
 
-    key = "Key num 1".encode( encoding="UTF-8" )
-    value = "Value num 1".encode( encoding="UTF-8" )
-    database.put(key, value)
-    key = "Key num 2".encode( encoding="UTF-8" )
-    value = "Value num 2".encode( encoding="UTF-8" )
-    database.put(key, value)
+    key = "A".encode( encoding="UTF-8" )
+    value = "1".encode( encoding="UTF-8" )
+    database.put(key, value, flags=db.DB_NOOVERWRITE )
+    key = "B".encode( encoding="UTF-8" )
+    value = "2".encode( encoding="UTF-8" )
+    database.put(key, value, flags=db.DB_NOOVERWRITE )
+    key = "C".encode( encoding="UTF-8" )
+    value = "2".encode( encoding="UTF-8" )
+    database.put(key, value, flags=db.DB_NOOVERWRITE )
 
     cur = database.cursor()
 
     iter =  cur.first()
-    print("Key value pairs from primary")
-    while iter:
+    print("Key value pairs from primary") 
+    while iter:                               
         print(iter[0].decode("UTF-8"))
         print(iter[1].decode("UTF-8"))
         print()
@@ -78,15 +81,10 @@ def populate( database, indexfile ):
     cur.close()
     
     cur = indexfile.cursor()
-    iter =  cur.first()
-    print("Key value pairs from indexfile")
-    while iter:
-        print(iter[0].decode("UTF-8"))
-        print(iter[1].decode("UTF-8"))
-        print()
-        iter = cur.next()
-
-    print(cur.pget(key))
+    vals = cur.pget(value, None, flags=db.DB_SET)
+    while vals:
+        print(vals[1:])
+        vals = cur.pget( db.DB_NEXT_DUP )
     cur.close()
     
     database.close() 
