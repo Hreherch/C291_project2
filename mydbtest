@@ -8,7 +8,7 @@ from bsddb3 import db
 DATABASE = "/tmp/doupton_db/dbdb.db"
 INDEXFILE = "/tmp/doupton_db/index.db"
 TMP_LOC = r"/tmp/doupton_db"
-DB_SIZE = 1000
+DB_SIZE = 100000
 SEED = 1000000
 
 #=============================================================================
@@ -64,9 +64,18 @@ def create_DB( datatype ):
 #Code modified from sample code in notes
 def populate( database ):
     print("Populating Database...")
+    progressbar = list("|" + "----loading-data----" + "|\r")
     count = 0
     random.seed(SEED)
     while count < DB_SIZE:
+        if count%(DB_SIZE/20) == 0: #Print progressbar
+            index = round((20*count/DB_SIZE)) + 1
+            if progressbar[index].isalpha():
+                progressbar[index] = progressbar[index].upper()
+            else:
+                progressbar[index] = "|"
+            sys.stdout.write("".join(progressbar))
+            sys.stdout.flush()
         count += 1
         krng = 64 + random.randint( 0, 63 )
         key = ""
@@ -81,10 +90,15 @@ def populate( database ):
         value = value.encode( "UTF-8" )
         try:
             database.put( key, value, flags=db.DB_NOOVERWRITE )
+            if random.randint(0,10000) == 5:
+                raise db.DBKeyExistError
         except db.DBKeyExistError as e:
             #Try another key that isn't a duplicate
-            print("Duplicated encountered; Trying different key...")
+            print("\rDuplicate encountered; Trying different key...")
+            sys.stdout.write("".join(progressbar))
+            sys.stdout.flush()
             count -= 1
+    sys.stdout.write("".join(progressbar[:-1]) + "\n")
 
     
 #=============================================================================
@@ -146,6 +160,9 @@ def get_withRange( database, datatype ):
     cursor = database.cursor()
     if datatype[0] == db.DB_BTREE: #This part is incomplete, will fix later
         result = cursor.get( low_value.encode( "UTF-8" ), None, flags=db.DB_SET)
+        result = cursor.next()
+        print(result)
+        result = None 
         while result:
             if result[0].decode( "UTF-8" ) <= high_value:
                 record_count += 1
