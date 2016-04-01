@@ -18,7 +18,15 @@ SEED = 1000000
 #
 
 def create_DB( datatype ):
-                                             ##Remember to mkdir /tmp/doupton_db
+    # Create/Check the working directory
+    try:
+        os.system( "mkdir /tmp/doupton_db" )
+        print( "/tmp/doupton_db created." )
+    except Exception as e:
+        #print( e )
+        print( "/tmp/doupton_dp potentially exists, destroying and continuing..." )
+        database = demolish_DB( None )     
+        
     print("Creating Database...") 
     try:
         database = db.DB()
@@ -35,6 +43,7 @@ def create_DB( datatype ):
             indexfile.open( DATABASE, "IndexFile", \
                               datatype[1], db.DB_CREATE )
             database.associate( indexfile, lambda x,y: y )
+            
         except Exception as e:
             print("Error occurred when opening database: Err 02")
             print(e)
@@ -73,7 +82,7 @@ def populate( database, indexfile ):
     while iter:
         print(iter[0].decode("UTF-8"))
         print(iter[1].decode("UTF-8"))
-        print()
+        print( iter )
         iter = cur.next()
     cur.close()
     
@@ -137,7 +146,7 @@ def demolish_DB( datatype ):
         print( "Removed database from /tmp/doupton_db" )
         return None
     except Exception as e:
-        print( e )
+        #print( e )
         print( "There was an error destroying the DB." )
         return -1
 
@@ -214,13 +223,6 @@ def showoptions():
 # wat do:
 #
 def main():
-    try:
-        os.system( "mkdir /tmp/doupton_db" )
-        print( "/tmp/doupton_db created." )
-    except Exception as e:
-        print( e )
-        print( "/tmp/doupton_dp potentially exists, continuing..." )
-        database = demolish_DB( None )
     datatype = get_datatype()
     database = None
     while True:
@@ -247,6 +249,7 @@ def main():
         elif option == '4':
             database = demolish_DB( database )
         elif option == '5':
+            database = demolish_DB( database )
             exit()
         else:
             errMsg = "ERROR:\tYou must specify one of the options listed."
