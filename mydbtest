@@ -2,11 +2,12 @@
 import sys
 import os
 import random
+from time import time
 from bsddb3 import db
 
 DATABASE = "/tmp/doupton_db/dbdb.db"
 TMP_LOC = r"/tmp/doupton_db"
-DB_SIZE = 10
+DB_SIZE = 100
 SEED = 1000000
 
 #=============================================================================
@@ -18,38 +19,59 @@ SEED = 1000000
 #
 
 def create_DB( datatype ):
-                                             ##Remember to mkdir /tmp/doupton_db
     print("Creating Database...") 
+    database = db.DB()
     try:
-        database = db.DB()
         database.open( DATABASE, "Primary", \
                        datatype[0], db.DB_CREATE )
     except Exception as e:
         print("Error occurred when opening database: Err 01")
         print(e)
-        return
+    indexfile = None
     if datatype[1]:
+        indexfile = db.DB()
+        indexfile.set_flags(db.DB_DUP) 
         try: 
-            indexfile = db.DB()
-            indexfile.set_flags(db.DB_DUP) 
             indexfile.open( DATABASE, "IndexFile", \
                               datatype[1], db.DB_CREATE )
-            database.associate( indexfile, lambda key,data: data )
         except Exception as e:
             print("Error occurred when opening indexfile: Err 02")
             print(e)
-            return
+            database.close()
+            return None, None
+
+        try:
+            database.associate( indexfile, lambda key,data: data )
+        except Exception as e:
+            print("Error occurred when associating indexfile: Err 03")
+            print(e)
+            indexfile.close()
+            database.close()
+            return None, None
 
     populate( database )
     print("Success!")
-    return database
+    return database, indexfile
 
 #Code modified from sample code in notes
 def populate( database ):
     print("Populating Database...")
     count = 0
-    #testcase = open("testcase.txt", "w")
     random.seed(SEED)
+    #testcase = open("testcase.txt", "w")
+    #key = "A".encode( encoding="UTF-8" )
+    #value = "1".encode( encoding="UTF-8" )
+    #database.put( key, value, flags=db.DB_NOOVERWRITE )
+    #key = "B".encode( encoding="UTF-8" )
+    #value = "2".encode( encoding="UTF-8" )
+    #database.put( key, value, flags=db.DB_NOOVERWRITE )
+    #key = "C".encode( encoding="UTF-8" )
+    #value = "2".encode( encoding="UTF-8" )
+    #database.put( key, value, flags=db.DB_NOOVERWRITE )
+    #key = "D".encode( encoding="UTF-8" )
+    #value = "3".encode( encoding="UTF-8" )
+    #database.put( key, value, flags=db.DB_NOOVERWRITE )
+    #return
     while count < DB_SIZE:
         count += 1
         krng = 64 + random.randint( 0, 63 )
@@ -61,22 +83,17 @@ def populate( database ):
         for i in range(vrng):
             value += str( chr( 97 + random.randint( 0, 25 ) ) )
 
-        key = key.encode( encoding="UTF-8" )
-        value = value.encode( encoding="UTF-8" )
+        key = key.encode( "UTF-8" )
+        value = value.encode( "UTF-8" )
         try:
             database.put( key, value, flags=db.DB_NOOVERWRITE )
-        except:
+        except db.DBKeyExistError as e:
             #Try another key that isn't a duplicate
             print("Duplicated encountered; Trying different key...")
             count -= 1
         #testcase.write(key.decode("UTF-8")+":"+value.decode("UTF-8")+"\n")
     #testcase.close()
 
-    #vals = cur.pget(value, None, flags=db.DB_SET)
-    #while vals:
-    #    print(vals[1:])
-    #    vals = cur.pget( db.DB_NEXT_DUP )
-    #cur.close()
     
 #=============================================================================
 # Function:
@@ -96,9 +113,36 @@ def get_withKey( datatype ):
 #
 # wat do:
 #
-def get_withData( datatype ):
-    print("Get with data")
-    pass
+    #vals = cur.pget(value, None, flags=db.DB_SET)
+    #while vals:
+    #    print(vals[1:])
+    #    vals = cur.pget( db.DB_NEXT_DUP )
+    #cur.close()
+def get_withData( database, indexfile ):
+    value = input( "Enter the data: " ).lower()
+    start = time()
+    record_count = 0
+    if indexfile: #If we have an indexfile
+        cursor = indexfile.cursor()
+        result = cursor.pget( value.encode( "UTF-8" ), None, flags=db.DB_SET )
+        while result:
+            record_count += 1
+            print("Matching result:", result[1:])
+            result = cursor.pget( db.DB_NEXT_DUP )
+    else:
+        cursor = database.cursor()
+        result = cursor.first()
+        while result:
+            if result[1].decode( "UTF-8" ) == value:
+                record_count += 1
+                print("Matching result:", result)
+            result = cursor.next()
+
+    end = time()
+    cursor.close()
+    print("Number of Records:", record_count)
+    print("Time Elapsed (micro seconds)", round((end-start)*10e6) )
+    input( "Press enter to return" )
 
 #=============================================================================
 # Function:
@@ -176,7 +220,7 @@ def get_datatype():
 #
 def showoptions():
     #print(chr(27) + "[2J")
-    print( "=" * 80 )
+    print( "\n" + "=" * 80 )
     print( " =" * 40 )
     print( "dbDB".center(80) )
     print( "= " * 40 )
@@ -224,20 +268,21 @@ def main():
                          "You cannot populate another without " +\
                          "destroying it first."
                 print( errMsg )
-            database = create_DB( datatype )
+            database, indexfile = create_DB( datatype )
         elif option == '1':
             get_withKey( database )
         elif option == '2':
-            get_withData( database )
+            get_withData( database, indexfile )
         elif option == '3':
             get_withRange( database )
         elif option == '4':
             database = demolish_DB( database )
         elif option == '5':
-            exit()
+            break
         else:
             errMsg = "ERROR:\tYou must specify one of the options listed."
             print( errMsg )
             
         
-main()
+if __name__ == "__main__":
+    main()
