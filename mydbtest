@@ -6,7 +6,7 @@ from bsddb3 import db
 
 DATABASE = "/tmp/doupton_db/dbdb.db"
 TMP_LOC = r"/tmp/doupton_db"
-DB_SIZE = 2
+DB_SIZE = 10
 SEED = 1000000
 
 #=============================================================================
@@ -34,60 +34,49 @@ def create_DB( datatype ):
             indexfile.set_flags(db.DB_DUP) 
             indexfile.open( DATABASE, "IndexFile", \
                               datatype[1], db.DB_CREATE )
-            database.associate( indexfile, lambda x,y: y )
+            database.associate( indexfile, lambda key,data: data )
         except Exception as e:
-            print("Error occurred when opening database: Err 02")
+            print("Error occurred when opening indexfile: Err 02")
             print(e)
             return
 
-    populate( database, indexfile )
+    populate( database )
+    print("Success!")
     return database
 
-#Code taken from sample code in notes
-def populate( database, indexfile ):
-    #for index in range( DB_SIZE ):                             ######Need to handle flags=db.DB_NOOVERWRITE
-    #    krng = 64 + random.randint( 0, 63 )
-    #    key = ""
-    #    for i in range(krng):
-    #        key += str( chr( 97 + random.randint( 0, 25 ) ) )
-    #    vrng = 64 + random.randint( 0, 63 )
-    #    value = ""
-    #    for i in range(vrng):
-    #        value += str( chr( 97 + random.randint( 0, 25 ) ) )
+#Code modified from sample code in notes
+def populate( database ):
+    print("Populating Database...")
+    count = 0
+    #testcase = open("testcase.txt", "w")
+    random.seed(SEED)
+    while count < DB_SIZE:
+        count += 1
+        krng = 64 + random.randint( 0, 63 )
+        key = ""
+        for i in range(krng):
+            key += str( chr( 97 + random.randint( 0, 25 ) ) )
+        vrng = 64 + random.randint( 0, 63 )
+        value = ""
+        for i in range(vrng):
+            value += str( chr( 97 + random.randint( 0, 25 ) ) )
 
-    #    key = key.encode( encoding="UTF-8" )
-    #    value = value.encode( encoding="UTF-8" )
-    #    database.put( key, value )
+        key = key.encode( encoding="UTF-8" )
+        value = value.encode( encoding="UTF-8" )
+        try:
+            database.put( key, value, flags=db.DB_NOOVERWRITE )
+        except:
+            #Try another key that isn't a duplicate
+            print("Duplicated encountered; Trying different key...")
+            count -= 1
+        #testcase.write(key.decode("UTF-8")+":"+value.decode("UTF-8")+"\n")
+    #testcase.close()
 
-    key = "A".encode( encoding="UTF-8" )
-    value = "1".encode( encoding="UTF-8" )
-    database.put(key, value, flags=db.DB_NOOVERWRITE )
-    key = "B".encode( encoding="UTF-8" )
-    value = "2".encode( encoding="UTF-8" )
-    database.put(key, value, flags=db.DB_NOOVERWRITE )
-    key = "C".encode( encoding="UTF-8" )
-    value = "2".encode( encoding="UTF-8" )
-    database.put(key, value, flags=db.DB_NOOVERWRITE )
-
-    cur = database.cursor()
-
-    iter =  cur.first()
-    print("Key value pairs from primary") 
-    while iter:                               
-        print(iter[0].decode("UTF-8"))
-        print(iter[1].decode("UTF-8"))
-        print()
-        iter = cur.next()
-    cur.close()
-    
-    cur = indexfile.cursor()
-    vals = cur.pget(value, None, flags=db.DB_SET)
-    while vals:
-        print(vals[1:])
-        vals = cur.pget( db.DB_NEXT_DUP )
-    cur.close()
-    
-    database.close() 
+    #vals = cur.pget(value, None, flags=db.DB_SET)
+    #while vals:
+    #    print(vals[1:])
+    #    vals = cur.pget( db.DB_NEXT_DUP )
+    #cur.close()
     
 #=============================================================================
 # Function:
