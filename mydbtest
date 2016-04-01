@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 import sys
+import os
 from bsddb3 import db
 
+TMP_LOC = r"/tmp/doupton_db"
 DATABASE = "/tmp/doupton_db/main.db"
 INDEXFILE = "/tmp/doupton_db/indexfile.db"
 
@@ -71,8 +73,14 @@ def get_withRange( datatype ):
 # wat do:
 #
 def demolish_DB( datatype ):
-    print("Demolish DB")
-    pass
+    try:
+        os.system( "rm -f /tmp/doupton_db -r" )
+        print( "Removed database from /tmp/doupton_db" )
+        return None
+    except Exception as e:
+        print( e )
+        print( "There was an error destroying the DB." )
+        return -1
 
 #=============================================================================
 # Function:
@@ -147,26 +155,38 @@ def showoptions():
 # wat do:
 #
 def main():
+    try:
+        os.system( "mkdir /tmp/doupton_db" )
+        print( "/tmp/doupton_db created." )
+    except Exception as e:
+        print( e )
+        print( "/tmp/doupton_dp potentially exists, continuing..." )
+        database = demolish_DB( None )
     datatype = get_datatype()
     database = None
     while True:
         showoptions()
         option = input("dbDB>")
         
+        if option in "1234" and database == None:
+            print( "ERROR:\tYou must first create a database." )
+            continue
+        
         if option == '0':
             if database != None:
                 errMsg = "ERROR:\tThere is an active Database already.\n" +\
-                         "You cannot populate another without destroying it first."
+                         "You cannot populate another without " +\
+                         "destroying it first."
                 print( errMsg )
             database = create_DB( datatype )
         elif option == '1':
-            continue
+            get_withKey( database )
         elif option == '2':
-            continue
+            get_withData( database )
         elif option == '3':
-            continue
+            get_withRange( database )
         elif option == '4':
-            continue
+            database = demolish_DB( database )
         elif option == '5':
             exit()
         else:
