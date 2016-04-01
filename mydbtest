@@ -189,21 +189,39 @@ def get_withRange( database, datatype ):
 # wat do:
 #
 def demolish_DB( database, indexfile ):
-    #empty = db.DB()
-    #if indexfile != None:
-    #    indexfile.close()
-    #if database != None:
-    #    database.close()
-    #else:
-    #    print( "Database already closed" )
-    #return None, None
-    if database:
-        database.close()
-    if indexfile:
-        indexfile.close()
-    os.system( "rm -rf /tmp/doupton_db" )
-    os.system( "mkdir /tmp/doupton_db" )
-    return None
+    removeDB = db.DB()
+    
+    # Remove INDEXFILE
+    if indexfile != None:
+        try:
+            removeDB.remove( INDEXFILE )
+            print( INDEXFILE, "demolished." )
+        except db.DBNoSuchFileError:
+            noDBMsg = "The database at " + INDEXFILE + " does not exist!"
+            print( noDBMsg )
+        except Exception as e:
+            print( e )
+            print( "Something unexpected occurred!" )
+            print( "Type 'make' to ensure next run is clean!")
+            exit()
+    removeDB.close()
+    
+    removeDB = db.DB()      # This process is neccessary
+    # Remove DATABASE
+    try:
+        removeDB.remove( DATABASE )
+        print( DATABASE, "demolished." )
+    except db.DBNoSuchFileError:
+        noDBMsg = "The database at " + DATABASE + " does not exist!"
+        print( noDBMsg )
+    except Exception as e:
+        print( e )
+        print( "Something unexpected occurred!" )
+        print( "Type 'make' to ensure next run is clean!")
+        exit()  
+    removeDB.close()
+    
+    return None, None
 
 #=============================================================================
 # Function:
@@ -276,6 +294,7 @@ def showoptions():
 def main():
     datatype = get_datatype()
     database = None
+    indexfile = None
     
     while True:
         showoptions()
@@ -288,6 +307,7 @@ def main():
                          "You cannot populate another without " +\
                          "destroying it first."
                 print( errMsg )
+                continue
             database, indexfile = create_DB( datatype )
         
         # Get with KEY
@@ -300,25 +320,31 @@ def main():
         
         # Get with DATA
         elif option == '2':
+            if database == None:
+                errMsg = "ERROR:\tYou must first create the database."
+                print( errMsg )
+                continue
             get_withData( database, indexfile )
         
         # Get with RANGE
         elif option == '3':
+            if database == None:
+                errMsg = "ERROR:\tYou must first create the database."
+                print( errMsg )
+                continue
             get_withRange( database, datatype )
             
         # Demolish Database
         elif option == '4':
-            database = demolish_DB( database, indexfile )
+            database, indexfile = demolish_DB( database, indexfile )
             
         # Exit
         elif option == '5':
             if database != None:
-                print( "\nThe database is still active...")
-                print( "Press any key to exit, press y to demolish before exiting." )
-                option = input( "Do you wish to demolish the DB?: " )
-                if option == 'y':
-                    continue                                                            #####You left this blank? I don't know what it does
-            break
+                print( "ERROR:\tYou are not allowed to quit without demolishing first." )
+                continue
+            print()
+            exit()
         else:
             errMsg = "ERROR:\tYou must specify one of the options listed."
             print( errMsg )
