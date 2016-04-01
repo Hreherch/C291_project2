@@ -8,7 +8,7 @@ from bsddb3 import db
 DATABASE = "/tmp/doupton_db/dbdb.db"
 INDEXFILE = "/tmp/doupton_db/index.db"
 TMP_LOC = r"/tmp/doupton_db"
-DB_SIZE = 100000
+DB_SIZE = 1000
 SEED = 1000000
 
 #=============================================================================
@@ -66,20 +66,6 @@ def populate( database ):
     print("Populating Database...")
     count = 0
     random.seed(SEED)
-    #testcase = open("testcase.txt", "w")
-    #key = "A".encode( encoding="UTF-8" )
-    #value = "1".encode( encoding="UTF-8" )
-    #database.put( key, value, flags=db.DB_NOOVERWRITE )
-    #key = "B".encode( encoding="UTF-8" )
-    #value = "2".encode( encoding="UTF-8" )
-    #database.put( key, value, flags=db.DB_NOOVERWRITE )
-    #key = "C".encode( encoding="UTF-8" )
-    #value = "2".encode( encoding="UTF-8" )
-    #database.put( key, value, flags=db.DB_NOOVERWRITE )
-    #key = "D".encode( encoding="UTF-8" )
-    #value = "3".encode( encoding="UTF-8" )
-    #database.put( key, value, flags=db.DB_NOOVERWRITE )
-    #return
     while count < DB_SIZE:
         count += 1
         krng = 64 + random.randint( 0, 63 )
@@ -99,8 +85,6 @@ def populate( database ):
             #Try another key that isn't a duplicate
             print("Duplicated encountered; Trying different key...")
             count -= 1
-        #testcase.write(key.decode("UTF-8")+":"+value.decode("UTF-8")+"\n")
-    #testcase.close()
 
     
 #=============================================================================
@@ -125,12 +109,12 @@ def get_withData( database, indexfile ):
     value = input( "Enter the data: " ).lower()
     start = time()
     record_count = 0
+    print("Retrieving data...")
     if indexfile: #If we have an indexfile
         cursor = indexfile.cursor()
         result = cursor.pget( value.encode( "UTF-8" ), None, flags=db.DB_SET )
         while result:
             record_count += 1
-            print("Matching result:", result[1:])
             result = cursor.pget( db.DB_NEXT_DUP )
     else:
         cursor = database.cursor()
@@ -138,12 +122,11 @@ def get_withData( database, indexfile ):
         while result:
             if result[1].decode( "UTF-8" ) == value:
                 record_count += 1
-                print("Matching result:", result)
             result = cursor.next()
 
     end = time()
     cursor.close()
-    print("Number of Records:", record_count)
+    print("\nNumber of Records:", record_count)
     print("Time Elapsed (micro seconds)", round((end-start)*10e6) )
     input( "Press enter to return" )
 
@@ -154,10 +137,33 @@ def get_withData( database, indexfile ):
 #
 # wat do:
 #
-def get_withRange( database ):
-    print("Get with range")
-    pass
+def get_withRange( database, datatype ):
+    low_value = input( "Enter the low valued key: " ).lower()
+    high_value = input( "Enter the high valued key: " ).lower()
+    start = time()
+    record_count = 0
+    print("Retrieving data...")
+    cursor = database.cursor()
+    if datatype[0] == db.DB_BTREE: #This part is incomplete, will fix later
+        result = cursor.get( low_value.encode( "UTF-8" ), None, flags=db.DB_SET)
+        while result:
+            if result[0].decode( "UTF-8" ) <= high_value:
+                record_count += 1
+            result = cursor.next()
 
+    elif datatype[0] == db.DB_HASH:
+        result = cursor.first()
+        while result:
+            if low_value <= result[0].decode( "UTF-8" ) <= high_value:
+                record_count += 1
+            result = cursor.next()
+
+    end = time()
+    cursor.close()
+    print("\nNumber of Records:", record_count)
+    print("Time Elapsed (micro seconds)", round((end-start)*10e6) )
+    input( "Press enter to return" )
+    
 #=============================================================================
 # Function:
 #=============================================================================
@@ -229,21 +235,17 @@ def get_datatype():
 # wat do:
 #
 def showoptions():
-    #print(chr(27) + "[2J")
     print( "\n" + "=" * 80 )
     print( " =" * 40 )
     print( "dbDB".center(80) )
-    print( "= " * 40 )
-    
-    print()
-    
+    print( "= " * 40 + "\n" )
+
     options = [ "Create/Populate Database", "Get with KEY", "Get with DATA", \
                 "Get with RANGE", "Demolish Database", "Exit" ]
                 
     for index in range( len( options ) ):
         optStr = "[" + str(index) + "]: " + options[index]
         print( optStr )
-    
     print()
 
 
@@ -285,7 +287,7 @@ def main():
         
         # Get with RANGE
         elif option == '3':
-            get_withRange( database )
+            get_withRange( database, datatype )
             
         # Demolish Database
         elif option == '4':
