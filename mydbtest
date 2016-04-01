@@ -6,8 +6,9 @@ from time import time
 from bsddb3 import db
 
 DATABASE = "/tmp/doupton_db/dbdb.db"
+INDEXFILE = "/tmp/doupton_db/index.db"
 TMP_LOC = r"/tmp/doupton_db"
-DB_SIZE = 100
+DB_SIZE = 100000
 SEED = 1000000
 
 #=============================================================================
@@ -32,7 +33,7 @@ def create_DB( datatype ):
         indexfile = db.DB()
         indexfile.set_flags(db.DB_DUP) 
         try: 
-            indexfile.open( DATABASE, "IndexFile", \
+            indexfile.open( INDEXFILE, "IndexFile", \
                               datatype[1], db.DB_CREATE )
         except Exception as e:
             print("Error occurred when opening indexfile: Err 02")
