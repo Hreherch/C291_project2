@@ -166,7 +166,15 @@ def get_withRange( database ):
 #
 def demolish_DB( database, indexfile ):
     removeDB = db.DB()
-    removeDB.remove( DATABASE )
+    try:
+        removeDB.remove( DATABASE )
+        print( "Database demolished." )
+    except db.DBNoSuchFileError:
+        print( "The database does not exist!" )
+    except Exception as e:
+        print( e )
+        print( "Something unexpected occurred!" )
+        exit()
     removeDB.close()
     return None, None
     
