@@ -3,60 +3,91 @@ import sys
 import random
 from bsddb3 import db
 
-DATABASE = "/tmp/doupton_db/main.db"
-INDEXFILE = "/tmp/doupton_db/indexfile.db"
-DB_SIZE = 100000
+DATABASE = "/tmp/doupton_db/dbdb.db"
+DB_SIZE = 2
 SEED = 1000000
 
-#Code taken from sample code in notes
-def populate( datebase ):
-    for index in range( DB_SIZE ):
-        krng = 64 + random.randint( 0, 63 )
-        key = ""
-        for i in range(krng):
-            key += str( chr( 97 + random.randint( 0, 25 ) ) )
-        vrng = 64 + random.randint( 0, 63 )
-        value = ""
-        for i in range(vrng):
-            value += str( chr( 97 + random.randint( 0, 25 ) ) )
+#=============================================================================
+# Function: Takes args and does thing
+#=============================================================================
+# args:
+#
+# wat do:
+#
 
-        key = key.encode( encoding="UTF-8" )
-        value = value.encode( encoding="UTF-8" )
-        database.put( key, value )
+def create_DB( datatype ):
+                                             ##Remember to mkdir /tmp/doupton_db
+    print("Creating Database...") 
+    try:
+        database = db.DB()
+        database.open( DATABASE, "Primary", \
+                       datatype[0], db.DB_CREATE )
+    except Exception as e:
+        print("Error occurred when opening database: Err 01")
+        print(e)
+        return
+    if datatype[1]:
+        try: 
+            indexfile = db.DB()
+            indexfile.set_flags(db.DB_DUP) 
+            indexfile.open( DATABASE, "IndexFile", \
+                              datatype[1], db.DB_CREATE )
+            database.associate( indexfile, lambda x,y: y )
+        except Exception as e:
+            print("Error occurred when opening database: Err 02")
+            print(e)
+            return
+
+    populate( database, indexfile )
+    return database
+
+#Code taken from sample code in notes
+def populate( database, indexfile ):
+    #for index in range( DB_SIZE ):
+    #    krng = 64 + random.randint( 0, 63 )
+    #    key = ""
+    #    for i in range(krng):
+    #        key += str( chr( 97 + random.randint( 0, 25 ) ) )
+    #    vrng = 64 + random.randint( 0, 63 )
+    #    value = ""
+    #    for i in range(vrng):
+    #        value += str( chr( 97 + random.randint( 0, 25 ) ) )
+
+    #    key = key.encode( encoding="UTF-8" )
+    #    value = value.encode( encoding="UTF-8" )
+    #    database.put( key, value )
+
+    key = "Key num 1".encode( encoding="UTF-8" )
+    value = "Value num 1".encode( encoding="UTF-8" )
+    database.put(key, value)
+    key = "Key num 2".encode( encoding="UTF-8" )
+    value = "Value num 2".encode( encoding="UTF-8" )
+    database.put(key, value)
 
     cur = database.cursor()
+
     iter =  cur.first()
+    print("Key value pairs from primary")
+    while iter:
+        print(iter[0].decode("UTF-8"))
+        print(iter[1].decode("UTF-8"))
+        print()
+        iter = cur.next()
+    cur.close()
+    
+    cur = indexfile.cursor()
+    iter =  cur.first()
+    print("Key value pairs from indexfile")
     while iter:
         print(iter[0].decode("UTF-8"))
         print(iter[1].decode("UTF-8"))
         print()
         iter = cur.next()
 
-    database.close() 
+    print(cur.pget(key))
+    cur.close()
     
-
-#=============================================================================
-# Function:
-#=============================================================================
-# args:
-#
-# wat do:
-#
-def create_DB( datatype ):
-        ##Remember to mkdir /tmp/doupton_db
-    print("Creating Database...") 
-    try: 
-        database = db.DB()
-        database.open( DATABASE, None , datatype[0], db.DB_CREATE )
-        if datatype[1]:
-            second_database = db.DB()
-            second_database.open( INDEXFILE, None, datatype[1], db.DB_CREATE )
-    except:
-        print("Something went wrong")
-        return
-    populate( datebase )
-
-    return database
+    database.close() 
     
 #=============================================================================
 # Function:
@@ -127,7 +158,7 @@ def get_datatype():
     elif datatype == "hash":
         datatype = (db.DB_HASH, None)
     elif datatype == 'indexfile':
-        datatype == (db.DB_BTREE, db.DB_HASH)
+        datatype = (db.DB_BTREE, db.DB_HASH)
     elif datatype == "help":
         helpMsg = "Usage: 'mydbtest OPTION'\n" +\
                   "options: 'btree', 'hash', 'indexfile', 'help'\n"
@@ -148,20 +179,24 @@ def get_datatype():
 #
 # wat do:
 #
-def showoptions( options ):
+def showoptions():
     #print(chr(27) + "[2J")
     print( "=" * 80 )
     print( " =" * 40 )
     print( "dbDB".center(80) )
     print( "= " * 40 )
+    
     print()
+    
+    options = [ "Create/Populate Database", "Get with KEY", "Get with DATA", \
+                "Get with RANGE", "Demolish Database", "Exit" ]
+                
     for index in range( len( options ) ):
-        try:
-            optStr = "[" + str(index) + "]: " + str( options[index].__name__ )
-            print( optStr )
-        except:
-            optStr = "[" + str(index) + "]: Exit "
-            print( optStr )
+        optStr = "[" + str(index) + "]: " + options[index]
+        print( optStr )
+    
+    print()
+
 
 #=============================================================================
 # Function:
@@ -171,22 +206,31 @@ def showoptions( options ):
 # wat do:
 #
 def main():
-    options = [ create_DB, get_withKey, get_withData, \
-                get_withRange, demolish_DB, quit ]
     datatype = get_datatype()
+    database = None
     while True:
-        showoptions( options )
+        showoptions()
         option = input("dbDB>")
-        # Ensure that the choice is an integer
-        try:
-            option = int( option )
-        except:
-            print( "Error:\t Choice must be an integer." )
+        
+        if option == '0':
+            if database != None:
+                errMsg = "ERROR:\tThere is an active Database already.\n" +\
+                         "You cannot populate another without destroying it first."
+                print( errMsg )
+            database = create_DB( datatype )
+        elif option == '1':
             continue
-        # Ensure that the choice is a valid choice
-        if option not in range( len(options) ):
-            print( "Error:\t You must choose one of the listed options." )
+        elif option == '2':
             continue
-
+        elif option == '3':
+            continue
+        elif option == '4':
+            continue
+        elif option == '5':
+            exit()
+        else:
+            errMsg = "ERROR:\tYou must specify one of the options listed."
+            print( errMsg )
+            
+        
 main()
-
