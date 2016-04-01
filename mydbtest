@@ -6,8 +6,9 @@ from time import time
 from bsddb3 import db
 
 DATABASE = "/tmp/doupton_db/dbdb.db"
+INDEXFILE = "/tmp/doupton_db/index.db"
 TMP_LOC = r"/tmp/doupton_db"
-DB_SIZE = 100
+DB_SIZE = 100000
 SEED = 1000000
 
 #=============================================================================
@@ -32,7 +33,7 @@ def create_DB( datatype ):
         indexfile = db.DB()
         indexfile.set_flags(db.DB_DUP) 
         try: 
-            indexfile.open( DATABASE, "IndexFile", \
+            indexfile.open( INDEXFILE, "IndexFile", \
                               datatype[1], db.DB_CREATE )
         except Exception as e:
             print("Error occurred when opening indexfile: Err 02")
@@ -100,6 +101,7 @@ def populate( database ):
             count -= 1
         #testcase.write(key.decode("UTF-8")+":"+value.decode("UTF-8")+"\n")
     #testcase.close()
+    
 
     
 #=============================================================================
@@ -166,18 +168,38 @@ def get_withRange( database ):
 #
 def demolish_DB( database, indexfile ):
     removeDB = db.DB()
+    
+    # Remove INDEXFILE
+    if indexfile != None:
+        try:
+            removeDB.remove( INDEXFILE )
+            print( INDEXFILE, "demolished." )
+        except db.DBNoSuchFileError:
+            noDBMsg = "The database at " + INDEXFILE + " does not exist!"
+            print( noDBMsg )
+        except Exception as e:
+            print( e )
+            print( "Something unexpected occurred!" )
+            print( "Type 'make' to ensure next run is clean!")
+            exit()
+    removeDB.close()
+    
+    removeDB = db.DB()      # This process is neccessary
+    # Remove DATABASE
     try:
         removeDB.remove( DATABASE )
-        print( "Database demolished." )
+        print( DATABASE, "demolished." )
     except db.DBNoSuchFileError:
-        print( "The database does not exist!" )
+        noDBMsg = "The database at " + DATABASE + " does not exist!"
+        print( noDBMsg )
     except Exception as e:
         print( e )
         print( "Something unexpected occurred!" )
-        exit()
+        print( "Type 'make' to ensure next run is clean!")
+        exit()  
     removeDB.close()
-    return None, None
     
+    return None, None
 
 #=============================================================================
 # Function:
@@ -267,6 +289,7 @@ def main():
                          "You cannot populate another without " +\
                          "destroying it first."
                 print( errMsg )
+                continue
             database, indexfile = create_DB( datatype )
         
         # Get with KEY
@@ -300,11 +323,8 @@ def main():
         # Exit
         elif option == '5':
             if database != None:
-                print( "\nThe database is still active...")
-                print( "Press any key to exit, press y to demolish before exiting." )
-                option = input( "Do you wish to demolish the DB?: " )
-                if option == 'y':
-                    database, indexfile = demolish_DB( database, indexfile )
+                print( "ERROR:\tYou are not allowed to quit without demolishing first." )
+                continue
             print()
             exit()
         else:
