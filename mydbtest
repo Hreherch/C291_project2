@@ -174,10 +174,13 @@ def demolish_DB( database, indexfile ):
     #else:
     #    print( "Database already closed" )
     #return None, None
+    if database:
+        database.close()
+    if indexfile:
+        indexfile.close()
     os.system( "rm -rf /tmp/doupton_db" )
     os.system( "mkdir /tmp/doupton_db" )
-    return None, None
-    
+    return None
 
 #=============================================================================
 # Function:
@@ -254,7 +257,6 @@ def showoptions():
 def main():
     datatype = get_datatype()
     database = None
-    indexfile = None
     
     while True:
         showoptions()
@@ -287,7 +289,7 @@ def main():
             
         # Demolish Database
         elif option == '4':
-            database, indexfile = demolish_DB( database, indexfile )
+            database = demolish_DB( database, indexfile )
             
         # Exit
         elif option == '5':
