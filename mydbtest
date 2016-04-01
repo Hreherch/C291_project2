@@ -53,6 +53,13 @@ def create_DB( datatype ):
     print("Success!")
     return database, indexfile
 
+#=============================================================================
+# Function: Takes args and does thing
+#=============================================================================
+# args:
+#
+# wat do:
+#
 #Code modified from sample code in notes
 def populate( database ):
     print("Populating Database...")
@@ -280,7 +287,6 @@ def main():
                 option = input( "Do you wish to demolish the DB?: " )
                 if option == 'y':
                     continue                                                            #####You left this blank? I don't know what it does
-                    
             break
         else:
             errMsg = "ERROR:\tYou must specify one of the options listed."
