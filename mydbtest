@@ -51,8 +51,7 @@ def create_DB( datatype ):
             return None, None
 
     populate( database )
-    print("Success!                      ")
-    input( "Press enter to return" )
+    print("|~~~~~~Success!~~~~~~|")
     return database, indexfile
 
 #=============================================================================
@@ -91,8 +90,8 @@ def populate( database ):
         value = value.encode( "UTF-8" )
         try:
             database.put( key, value, flags=db.DB_NOOVERWRITE )
-            print("Key: ", key)
-            print("Value : ", value)
+            #print("Key: ", key)
+            #print("Value : ", value)
         except db.DBKeyExistError as e:
             #Try another key that isn't a duplicate
             print("\rDuplicate encountered; Trying different key...")
@@ -123,7 +122,6 @@ def get_withKey( database ):
     cursor.close()
     print("\nNumber of Records:", record_count)
     print("Time Elapsed (micro seconds)", round((end-start)*10e6) )
-    input( "Press enter to return" )
  
 #=============================================================================
 # Function:
@@ -155,7 +153,6 @@ def get_withData( database, indexfile ):
     cursor.close()
     print("\nNumber of Records:", record_count)
     print("Time Elapsed (micro seconds)", round((end-start)*10e6) )
-    input( "Press enter to return" )
 
 #=============================================================================
 # Function:
@@ -189,7 +186,6 @@ def get_withRange( database, datatype ):
     cursor.close()
     print("\nNumber of Records:", record_count)
     print("Time Elapsed (micro seconds)", round((end-start)*10e6) )
-    input( "Press enter to return" )
  
  
 #=============================================================================
@@ -287,8 +283,14 @@ def get_datatype():
 #
 # wat do:
 #
-def showoptions():
-    print( "\n" + "=" * 80 )
+def showoptions(new=False):
+    if not new:
+        input( "Press enter to return to menu" )
+    #print( chr(27) + "[2J" )
+    os.system("clear")
+
+     
+    print( "\r" + "=" * 80 )
     print( " =" * 40 )
     print( "dbDB".center(80) )
     print( "= " * 40 + "\n" )
@@ -315,8 +317,8 @@ def main():
     indexfile = None
     
     # loop forever until exit
+    showoptions(True)
     while True:
-        showoptions()
         option = input("dbDB>")
        
         # Create/Populate Database
@@ -369,7 +371,7 @@ def main():
         else:
             errMsg = "ERROR:\tYou must specify one of the options listed."
             print( errMsg )
-            
+        showoptions()
         
 if __name__ == "__main__":
     main()
