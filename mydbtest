@@ -178,13 +178,21 @@ def get_withRange( database, datatype ):
     print("\nNumber of Records:", record_count)
     print("Time Elapsed (micro seconds)", round((end-start)*10e6) )
     input( "Press enter to return" )
-    
+ 
+ 
 #=============================================================================
-# Function:
+# Function: demolish_DB
 #=============================================================================
-# args:
+# ARGUMENTS:
+#       database:   The main db.DB() object used to store the key/value pairs
+#       indexfile:  The associated db.DB() object used in the 'indexfile' run 
+#                   of mydbtest
 #
-# wat do:
+# ABOUT:
+#       demolish_DB uses a db.DB() object to remove an indexfile, if it
+#   exists, and the main database file (if it exists). The function will
+#   print out appropriate messages depending on the current status of these
+#   databases.
 #
 def demolish_DB( database, indexfile ):
     removeDB = db.DB()
@@ -204,7 +212,7 @@ def demolish_DB( database, indexfile ):
             exit()
     removeDB.close()
     
-    removeDB = db.DB()      # This process is neccessary
+    removeDB = db.DB()      # closing/reopening is neccessary
     # Remove DATABASE
     try:
         removeDB.remove( DATABASE )
@@ -222,7 +230,7 @@ def demolish_DB( database, indexfile ):
     return None, None
 
 #=============================================================================
-# Function:
+# Function: 
 #=============================================================================
 # args:
 #
@@ -294,6 +302,7 @@ def main():
     database = None
     indexfile = None
     
+    # loop forever until exit
     while True:
         showoptions()
         option = input("dbDB>")
@@ -343,6 +352,8 @@ def main():
                 continue
             print()
             exit()
+            
+        # If a proper option was not selected...
         else:
             errMsg = "ERROR:\tYou must specify one of the options listed."
             print( errMsg )
