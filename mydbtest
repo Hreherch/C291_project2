@@ -51,7 +51,8 @@ def create_DB( datatype ):
             return None, None
 
     populate( database )
-    print("Success!")
+    print("Success!                      ")
+    input( "Press enter to return" )
     return database, indexfile
 
 #=============================================================================
@@ -90,15 +91,12 @@ def populate( database ):
         value = value.encode( "UTF-8" )
         try:
             database.put( key, value, flags=db.DB_NOOVERWRITE )
-            if random.randint(0,10000) == 5:
-                raise db.DBKeyExistError
         except db.DBKeyExistError as e:
             #Try another key that isn't a duplicate
             print("\rDuplicate encountered; Trying different key...")
             sys.stdout.write("".join(progressbar))
             sys.stdout.flush()
             count -= 1
-    sys.stdout.write("".join(progressbar[:-1]) + "\n")
 
     
 #=============================================================================
