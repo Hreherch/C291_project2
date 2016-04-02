@@ -285,7 +285,7 @@ def get_datatype():
 #
 def showoptions(new=False):
     if not new:
-        input( "Press enter to return to menu" )
+        input( "\nPress enter to return to menu\n" )
     #print( chr(27) + "[2J" )
     os.system("clear")
 
@@ -323,7 +323,7 @@ def main():
        
         # Create/Populate Database
         if option == '0':
-            if database != None:
+            if database:
                 errMsg = "ERROR:\tThere is an active Database already.\n" +\
                          "You cannot populate another without " +\
                          "destroying it first."
@@ -333,7 +333,7 @@ def main():
         
         # Get with KEY
         elif option == '1':
-            if database == None:
+            if not database:
                 errMsg = "ERROR:\tYou must first create the database."
                 print( errMsg )
                 continue
@@ -341,7 +341,7 @@ def main():
         
         # Get with DATA
         elif option == '2':
-            if database == None:
+            if not database:
                 errMsg = "ERROR:\tYou must first create the database."
                 print( errMsg )
                 continue
@@ -349,7 +349,7 @@ def main():
         
         # Get with RANGE
         elif option == '3':
-            if database == None:
+            if not database:
                 errMsg = "ERROR:\tYou must first create the database."
                 print( errMsg )
                 continue
@@ -361,17 +361,17 @@ def main():
             
         # Exit
         elif option == '5':
-            if database != None:
+            if database:
                 print( "ERROR:\tYou are not allowed to quit without demolishing first." )
                 continue
-            print()
-            exit()
+            break
             
         # If a proper option was not selected...
         else:
             errMsg = "ERROR:\tYou must specify one of the options listed."
             print( errMsg )
         showoptions()
+    os.system("clear")
         
 if __name__ == "__main__":
     main()
