@@ -91,6 +91,8 @@ def populate( database ):
         value = value.encode( "UTF-8" )
         try:
             database.put( key, value, flags=db.DB_NOOVERWRITE )
+            print("Key: ", key)
+            print("Value : ", value)
         except db.DBKeyExistError as e:
             #Try another key that isn't a duplicate
             print("\rDuplicate encountered; Trying different key...")
@@ -107,8 +109,21 @@ def populate( database ):
 # wat do:
 #
 def get_withKey( database ):
-    print("Get with key")
-    pass
+    key = input( "Enter the key: " ).lower()
+    start = time()
+    record_count = 0
+    print("Retrieving data...")
+    cursor = database.cursor()
+    result = cursor.first()
+    result = cursor.get( key.encode( "UTF-8" ), None, flags=db.DB_SET )
+    if result:
+        record_count += 1
+
+    end = time()
+    cursor.close()
+    print("\nNumber of Records:", record_count)
+    print("Time Elapsed (micro seconds)", round((end-start)*10e6) )
+    input( "Press enter to return" )
  
 #=============================================================================
 # Function:
@@ -157,10 +172,7 @@ def get_withRange( database, datatype ):
     print("Retrieving data...")
     cursor = database.cursor()
     if datatype[0] == db.DB_BTREE: #This part is incomplete, will fix later
-        result = cursor.get( low_value.encode( "UTF-8" ), None, flags=db.DB_SET)
-        result = cursor.next()
-        print(result)
-        result = None 
+        result = cursor.set_range( low_value.encode( "UTF-8" ) )
         while result:
             if result[0].decode( "UTF-8" ) <= high_value:
                 record_count += 1
