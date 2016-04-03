@@ -151,15 +151,16 @@ def get_withData( database, indexfile, value=None ):
     record_count = 0
     print( "Retrieving data..." )
 
-    start = time()
-    if indexfile: #If we have an indexfile
+    if indexfile != None: #If we have an indexfile
         cursor = indexfile.cursor()
+        start = time()
         result = cursor.pget( value, None, flags=db.DB_SET )
         while result:
             record_count += 1
             result = cursor.pget( db.DB_NEXT_DUP )
     else:
         cursor = database.cursor()
+        start = time()
         result = cursor.first()
         while result:
             if result[1] == value:
@@ -190,8 +191,8 @@ def get_withRange( database, datatype, low_value=None, high_value=None ):
     print( "Retrieving data..." )
     cursor = database.cursor()
 
-    start = time()
     if datatype[0] == db.DB_BTREE:
+        start = time()
         result = cursor.set_range( low_value )
         while result:
             if result[0] <= high_value:
@@ -199,6 +200,7 @@ def get_withRange( database, datatype, low_value=None, high_value=None ):
             result = cursor.next()
 
     elif datatype[0] == db.DB_HASH:
+        start = time()
         result = cursor.first()
         while result:
             if low_value <= result[0] <= high_value:
@@ -234,7 +236,7 @@ def demolish_DB( database, indexfile, verbose=False ):
     
     # Remove INDEXFILE
     try:
-        if indexfile:
+        if indexfile != None:
             indexfile.close()
         removeDB.remove( INDEXFILE )
         print( INDEXFILE, "demolished." )
@@ -252,7 +254,7 @@ def demolish_DB( database, indexfile, verbose=False ):
     removeDB = db.DB()      # closing/reopening is neccessary
     # Remove DATABASE
     try:
-        if database:
+        if database != None:
             database.close()
         removeDB.remove( DATABASE )
         print( DATABASE, "demolished." )
@@ -293,7 +295,7 @@ def get_datatype():
     elif datatype == "hash":
         datatype = (db.DB_HASH, None)
     elif datatype == 'indexfile':
-        datatype = (db.DB_BTREE, db.DB_HASH)
+        datatype = (db.DB_BTREE, db.DB_BTREE)
     elif datatype == "help":
         helpMsg = "Usage: 'mydbtest OPTION'\n" +\
                   "options: 'btree', 'hash', 'indexfile', 'help'\n"
@@ -355,7 +357,7 @@ def main():
        
         # Create/Populate Database
         if option == '0':
-            if database:
+            if database != None:
                 errMsg = "ERROR:\tThere is an active Database already.\n" +\
                          "You cannot populate another without " +\
                          "destroying it first."
@@ -393,7 +395,7 @@ def main():
             
         # Exit
         elif option == '5':
-            if database:
+            if database != None:
                 errMsg = "ERROR:\tYou are not allowed to quit " +\
                          "without demolishing first."
                 print( errMsg )
@@ -416,5 +418,5 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         print()
         print( "Sudden close!\nForcing removal of database..." )
-        demolish_DB( False, False )
+        demolish_DB( None, None )
         print( "Exit was successful." )
