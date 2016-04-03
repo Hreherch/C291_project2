@@ -18,6 +18,7 @@ pairs = {'lmsqugafxmclwmswxebhacoixgxyrklsatgarvwmkjqenolfdlavimjffnrfuvifsgixca
 
 def querytest( database, indexfile, datatype ):
 
+    print("In query test:", indexfile)
     #Query 1 Test
     total_time = 0
     for key in pairs:
@@ -28,6 +29,7 @@ def querytest( database, indexfile, datatype ):
     total_time = 0
     for value in pairs.values():
         total_time += get_withData( database, indexfile, value )
+        print("Total time:", total_time)
     avg2 = total_time/len(pairs)
 
     #Query 3 Test
