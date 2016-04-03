@@ -13,9 +13,9 @@ SEED = 1000000
 #=============================================================================
 # Function: Takes args and does thing
 #=============================================================================
-# args:
+# ARGUMENTS:
 #
-# wat do:
+# ABOUT:
 #
 
 def create_DB( datatype ):
@@ -63,9 +63,9 @@ def create_DB( datatype ):
 #=============================================================================
 # Function: Takes args and does thing
 #=============================================================================
-# args:
+# ARGUMENTS:
 #
-# wat do:
+# ABOUT:
 #
 #Code modified from sample code in notes
 def populate( database ):
@@ -113,20 +113,21 @@ def populate( database ):
 #=============================================================================
 # Function:
 #=============================================================================
-# args:
+# ARGUMENTS:
 #
-# wat do:
+# ABOUT:
 #
 def get_withKey( database, key=None ):
     if not key:
         key = input( "Enter the key: " ).lower()
-    start = time()
+    key = key.encode( "UTF-8" )
+
     record_count = 0
     print( "Retrieving data..." )
     cursor = database.cursor()
-    result = cursor.first()
-    result = cursor.get( key.encode( "UTF-8" ), None, flags=db.DB_SET )
-    if result:
+
+    start = time()
+    if cursor.get( key, None, flags=db.DB_SET ):
         record_count += 1
 
     total_time = round( ( time() - start ) * 10e6 )
@@ -138,19 +139,22 @@ def get_withKey( database, key=None ):
 #=============================================================================
 # Function:
 #=============================================================================
-# args:
+# ARGUMENTS:
 #
-# wat do:
+# ABOUT:
 #
 def get_withData( database, indexfile, value=None ):
     if not value:
         value = input( "Enter the data: " ).lower()
-    start = time()
+
+    value = value.encode( "UTF-8" )
     record_count = 0
     print( "Retrieving data..." )
+
+    start = time()
     if indexfile: #If we have an indexfile
         cursor = indexfile.cursor()
-        result = cursor.pget( value.encode( "UTF-8" ), None, flags=db.DB_SET )
+        result = cursor.pget( value, None, flags=db.DB_SET )
         while result:
             record_count += 1
             result = cursor.pget( db.DB_NEXT_DUP )
@@ -158,7 +162,7 @@ def get_withData( database, indexfile, value=None ):
         cursor = database.cursor()
         result = cursor.first()
         while result:
-            if result[1].decode( "UTF-8" ) == value:
+            if result[1] == value:
                 record_count += 1
             result = cursor.next()
 
@@ -171,29 +175,33 @@ def get_withData( database, indexfile, value=None ):
 #=============================================================================
 # Function:
 #=============================================================================
-# args:
+# ARGUMENTS:
 #
-# wat do:
+# ABOUT:
 #
 def get_withRange( database, datatype, low_value=None, high_value=None ):
     if not (low_value and high_value):
         low_value = input( "Enter the low valued key: " ).lower()
         high_value = input( "Enter the high valued key: " ).lower()
-    start = time()
+
+    low_value = low_value.encode( "UTF-8" )
+    high_value = high_value.encode( "UTF-8" )
     record_count = 0
     print( "Retrieving data..." )
     cursor = database.cursor()
-    if datatype[0] == db.DB_BTREE: #This part is incomplete, will fix later
-        result = cursor.set_range( low_value.encode( "UTF-8" ) )
+
+    start = time()
+    if datatype[0] == db.DB_BTREE:
+        result = cursor.set_range( low_value )
         while result:
-            if result[0].decode( "UTF-8" ) <= high_value:
+            if result[0] <= high_value:
                 record_count += 1
             result = cursor.next()
 
     elif datatype[0] == db.DB_HASH:
         result = cursor.first()
         while result:
-            if low_value <= result[0].decode( "UTF-8" ) <= high_value:
+            if low_value <= result[0] <= high_value:
                 record_count += 1
             result = cursor.next()
 
@@ -217,27 +225,35 @@ def get_withRange( database, datatype, low_value=None, high_value=None ):
 #   print out appropriate messages depending on the current status of these
 #   databases.
 #
-def demolish_DB( database, indexfile ):
+# WARNING:
+#       If there is ever an error with the application, we cannot properly
+#   demolish the database and it may be left in the temporary file. 
+#
+def demolish_DB( database, indexfile, verbose=False ):
     removeDB = db.DB()
     
     # Remove INDEXFILE
-    if indexfile:
-        try:
-            removeDB.remove( INDEXFILE )
-            print( INDEXFILE, "demolished." )
-        except db.DBNoSuchFileError:
+    try:
+        if indexfile:
+            indexfile.close()
+        removeDB.remove( INDEXFILE )
+        print( INDEXFILE, "demolished." )
+    except db.DBNoSuchFileError:
+        if verbose:
             noDBMsg = "The database at " + INDEXFILE + " does not exist!"
             print( noDBMsg )
-        except Exception as e:
-            print( e )
-            print( "Something unexpected occurred!" )
-            print( "Type 'make' to ensure next run is clean!")
-            exit()
+    except Exception as e:
+        print( e )
+        print( "Something unexpected occurred!" )
+        print( "Type 'make' to ensure next run is clean!" )
+        exit()
     removeDB.close()
     
     removeDB = db.DB()      # closing/reopening is neccessary
     # Remove DATABASE
     try:
+        if database:
+            database.close()
         removeDB.remove( DATABASE )
         print( DATABASE, "demolished." )
     except db.DBNoSuchFileError:
@@ -246,7 +262,7 @@ def demolish_DB( database, indexfile ):
     except Exception as e:
         print( e )
         print( "Something unexpected occurred!" )
-        print( "Type 'make' to ensure next run is clean!")
+        print( "Type 'make' to ensure next run is clean!" )
         exit()  
     removeDB.close()
     
@@ -255,9 +271,9 @@ def demolish_DB( database, indexfile ):
 #=============================================================================
 # Function: 
 #=============================================================================
-# args:
+# ARGUMENTS:
 #
-# wat do:
+# ABOUT:
 #
 # Returns a tuple of (primary datatype, secondary datatype)
 def get_datatype():
@@ -292,16 +308,18 @@ def get_datatype():
     return datatype
     
 #=============================================================================
-# Function:
+# Function: showoptions
 #=============================================================================
-# args:
+# ARGUMENTS:
 #
-# wat do:
+# ABOUT:
 #
-def showoptions(new=False):
+def showoptions( new=False ):
     if not new:
         input( "\nPress enter to return to menu\n" )
     os.system("clear")
+
+    # dbDB text header 
     print( "\r" + "=" * 80 )
     print( " =" * 40 )
     print( "dbDB".center(80) )
@@ -309,7 +327,8 @@ def showoptions(new=False):
 
     options = [ "Create/Populate Database", "Get with KEY", "Get with DATA", \
                 "Get with RANGE", "Demolish Database", "Exit" ]
-                
+    
+    # prints the above options in a nice format
     for index in range( len( options ) ):
         optStr = "[" + str(index) + "]: " + options[index]
         print( optStr )
@@ -317,19 +336,20 @@ def showoptions(new=False):
 
 
 #=============================================================================
-# Function:
+# Function: main
 #=============================================================================
-# args:
+# ARGUMENTS:
+#       N/A
 #
-# wat do:
+# ABOUT:
 #
 def main():
     datatype = get_datatype()
     database = None
     indexfile = None
     
-    # loop forever until exit
     showoptions(True)
+    # loop forever until exit
     while True:
         option = input("dbDB>")
        
@@ -374,7 +394,9 @@ def main():
         # Exit
         elif option == '5':
             if database:
-                print( "ERROR:\tYou are not allowed to quit without demolishing first." )
+                errMsg = "ERROR:\tYou are not allowed to quit " +\
+                         "without demolishing first."
+                print( errMsg )
                 continue
             break
             
@@ -382,13 +404,17 @@ def main():
         else:
             errMsg = "ERROR:\tYou must specify one of the options listed."
             print( errMsg )
+            
         showoptions()
-    os.system("clear")
         
+    os.system( "clear" )
+    
+#        
 if __name__ == "__main__":
     try:
         main()
     except KeyboardInterrupt:
-        print("Sudden close!\nForcing removal of database")
-        demolish_DB(True, True)
-        print("Exit was successful")
+        print()
+        print( "Sudden close!\nForcing removal of database..." )
+        demolish_DB( False, False )
+        print( "Exit was successful." )

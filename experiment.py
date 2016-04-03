@@ -1,17 +1,20 @@
 #!/usr/bin/env python3
 from mydbtest import *
 
-pairs = {'bdkzzlmjdhhtvteipvucmuvcoulydwpviktrijcuntgxgcsillxopexakuacvdve':
+
+#Temporarily hardcoded
+pairs = {'lmsqugafxmclwmswxebhacoixgxyrklsatgarvwmkjqenolfdlavimjffnrfuvifsgixcaukohznwgxesgh':
+         'rjogbzouspdbakoehdgvsheluoshaztogxrzdtruhdbeyefeagbtxphyebyvfjkpqvljcckyczyomjueslkiwaijocbycqnzsznnf',
+
+         'mirxqefdvfniukkttyiijyxcxadlfvbacumghojkchsikxlywxcufoqbgtifuulnucmzbzhqmdbifbekkyvgtyd':
+         'ytmgfuhepzxpstfijwcggoijvijjhidjjzmtklwolacdzohdtfuwwlyawgoaijrgpaphkcpntaaroyrxwfojksungtrqyheolzimonnfgkenanmufxecusgho',
+
+         'bdkzzlmjdhhtvteipvucmuvcoulydwpviktrijcuntgxgcsillxopexakuacvdve': 
          'mzgliowuchxnwzekdmnxkygczjrktxudhtvqwycwhlkxzurgrklmvflpitzetsxkmenmptsterfrebhutudoffrxrdnkcglonwjoymysfobiyv',
 
-         'krrssrfwmqbmvlmjsjfwjpaazjzwisdztuybiwnjqwhglocrsfzsilktsukplmwqgzgjpjqfywxmxwisigfrgrifldzgpvvelomjgqidkqjjvbffmpqivgzxvqrvmi':
-         'cziqaqyiiqsqdbptewowtpchpgvucugvnwfxyicwyfkvknfikqooswmkdotutzvywmylzzagvztaxvumvxyitmauidkmoplufohqjztmweqsorn',
+         'oyzpyiexxlroxruloaejoxhqhvevmcrbkoqgnselmwxnqsreikqnfklqpnsrqzijauspjyflldrenatgjnkqxxwlte':
+         'mrmbenjlnubtbwgnkexnklwaqqwdwwkofzqferxveokhbwxwremyicvkypzmkpryynzunm' }
 
-         'josdmxkqfbzyfqkznqnhioqilzvxbdvolojqwypxmuszgkifluwyezqgwzmeofqpcgbpywlwwzebptq':
-         'rnktxqrgehfgycflthrfsfhauqaqdlfuijmlgnlizboihlymztxsbjffjjdqmwcfojxhhbnppk',
-
-         'plgiikbnpvvsbmfdmiftqmytvifewskqmlxhlorilpqbsduypddbklgxjkoslfxuucvwxvflzlldhrhogj':
-         'kaqkrimlblzwhfxvgvojqdpeqvgvwkmubyubpybfjllnbvollyhmjemxccmxjhxfyamlafqppxndbkneiorpcmefcscsoalqkkbwwvtpkhnsbbybn' }
 
 def querytest( database, indexfile, datatype ):
 
@@ -29,9 +32,10 @@ def querytest( database, indexfile, datatype ):
 
     #Query 3 Test
     total_time = 0
-    for low_value, high_value in [('a','ab'),('f','fb'),('m','mb'),('r','rb')]:
+    rangelist = [('a','ab'),('f','fb'),('m','mb'),('r','rb')]
+    for low_value, high_value in rangelist:
         total_time += get_withRange( database, datatype, low_value, high_value )
-    avg3 = total_time/len(pairs)
+    avg3 = total_time/len(rangelist)
     return avg1,avg2,avg3
 
 #BTREE
@@ -52,10 +56,11 @@ database, indexfile = create_DB( datatype )
 results_indexfile = querytest( database, indexfile, datatype )
 demolish_DB( database, indexfile )
 
-print("\n\n\n")
+print()
 print("Btree")
 print("Query 1,2,3 time:", results_btree)
 print("Hash")
 print("Query 1,2,3 time:", results_hash)
 print("Indexfile")
 print("Query 1,2,3 time:", results_indexfile)
+print()
