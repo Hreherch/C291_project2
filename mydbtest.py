@@ -7,7 +7,6 @@ from bsddb3 import db
 
 DATABASE = "/tmp/doupton_db/dbdb.db"
 INDEXFILE = "/tmp/doupton_db/index.db"
-TMP_LOC = r"/tmp/doupton_db"
 DB_SIZE = 100000
 SEED = 1000000
 
@@ -21,6 +20,8 @@ SEED = 1000000
 
 def create_DB( datatype ):
     print("Creating Database...") 
+
+    #Open main database
     database = db.DB()
     try:
         database.open( DATABASE, "Primary", \
@@ -29,8 +30,11 @@ def create_DB( datatype ):
         print("Error occurred when opening database: Err 01")
         print(e)
         return None, None
+
+
     indexfile = None
     if datatype[1]:
+        #Open indexfile if specified
         indexfile = db.DB()
         indexfile.set_flags(db.DB_DUP) 
         try: 
@@ -42,6 +46,7 @@ def create_DB( datatype ):
             database.close()
             return None, None
 
+        #Associate indexfile to main database
         try:
             database.associate( indexfile, lambda key,data: data )
         except Exception as e:
@@ -65,9 +70,12 @@ def create_DB( datatype ):
 #Code modified from sample code in notes
 def populate( database ):
     print("Populating Database...")
+
+    #Progrss bar tells user how much has been loaded
     progressbar = list("|" + "----loading-data----" + "|\r")
     count = 0
     random.seed(SEED)
+
     while count < DB_SIZE:
         if count%(DB_SIZE/20) == 0: #Print progressbar
             index = round((20*count/DB_SIZE)) + 1
@@ -78,6 +86,8 @@ def populate( database ):
             sys.stdout.write("".join(progressbar))
             sys.stdout.flush()
         count += 1
+
+        #Generate Key/Value pair
         krng = 64 + random.randint( 0, 63 )
         key = ""
         for i in range(krng):
@@ -86,13 +96,12 @@ def populate( database ):
         value = ""
         for i in range(vrng):
             value += str( chr( 97 + random.randint( 0, 25 ) ) )
-
         key = key.encode( "UTF-8" )
         value = value.encode( "UTF-8" )
+
+        #Add to database
         try:
             database.put( key, value, flags=db.DB_NOOVERWRITE )
-            #print("Key: ", key)
-            #print("Value : ", value)
         except db.DBKeyExistError as e:
             #Try another key that isn't a duplicate
             print("\rDuplicate encountered; Trying different key...")
@@ -108,21 +117,23 @@ def populate( database ):
 #
 # wat do:
 #
-def get_withKey( database ):
-    key = input( "Enter the key: " ).lower()
+def get_withKey( database, key=None ):
+    if not key:
+        key = input( "Enter the key: " ).lower()
     start = time()
     record_count = 0
-    print("Retrieving data...")
+    print( "Retrieving data..." )
     cursor = database.cursor()
     result = cursor.first()
     result = cursor.get( key.encode( "UTF-8" ), None, flags=db.DB_SET )
     if result:
         record_count += 1
 
-    end = time()
+    total_time = round( ( time() - start ) * 10e6 )
     cursor.close()
-    print("\nNumber of Records:", record_count)
-    print("Time Elapsed (micro seconds)", round((end-start)*10e6) )
+    print( "\nNumber of Records:", record_count )
+    print( "Time Elapsed (micro seconds)", total_time )
+    return total_time
  
 #=============================================================================
 # Function:
@@ -131,11 +142,12 @@ def get_withKey( database ):
 #
 # wat do:
 #
-def get_withData( database, indexfile ):
-    value = input( "Enter the data: " ).lower()
+def get_withData( database, indexfile, value=None ):
+    if not value:
+        value = input( "Enter the data: " ).lower()
     start = time()
     record_count = 0
-    print("Retrieving data...")
+    print( "Retrieving data..." )
     if indexfile: #If we have an indexfile
         cursor = indexfile.cursor()
         result = cursor.pget( value.encode( "UTF-8" ), None, flags=db.DB_SET )
@@ -150,10 +162,11 @@ def get_withData( database, indexfile ):
                 record_count += 1
             result = cursor.next()
 
-    end = time()
+    total_time = round( ( time() - start ) * 10e6 )
     cursor.close()
-    print("\nNumber of Records:", record_count)
-    print("Time Elapsed (micro seconds)", round((end-start)*10e6) )
+    print( "\nNumber of Records:", record_count )
+    print( "Time Elapsed (micro seconds)", total_time )
+    return total_time
 
 #=============================================================================
 # Function:
@@ -162,12 +175,13 @@ def get_withData( database, indexfile ):
 #
 # wat do:
 #
-def get_withRange( database, datatype ):
-    low_value = input( "Enter the low valued key: " ).lower()
-    high_value = input( "Enter the high valued key: " ).lower()
+def get_withRange( database, datatype, low_value=None, high_value=None ):
+    if not (low_value and high_value):
+        low_value = input( "Enter the low valued key: " ).lower()
+        high_value = input( "Enter the high valued key: " ).lower()
     start = time()
     record_count = 0
-    print("Retrieving data...")
+    print( "Retrieving data..." )
     cursor = database.cursor()
     if datatype[0] == db.DB_BTREE: #This part is incomplete, will fix later
         result = cursor.set_range( low_value.encode( "UTF-8" ) )
@@ -183,11 +197,11 @@ def get_withRange( database, datatype ):
                 record_count += 1
             result = cursor.next()
 
-    end = time()
+    total_time = round( ( time() - start ) * 10e6 )
     cursor.close()
-    print("\nNumber of Records:", record_count)
-    print("Time Elapsed (micro seconds)", round((end-start)*10e6) )
- 
+    print( "\nNumber of Records:", record_count )
+    print( "Time Elapsed (micro seconds)", total_time )
+    return total_time
  
 #=============================================================================
 # Function: demolish_DB
@@ -287,10 +301,7 @@ def get_datatype():
 def showoptions(new=False):
     if not new:
         input( "\nPress enter to return to menu\n" )
-    #print( chr(27) + "[2J" )
     os.system("clear")
-
-     
     print( "\r" + "=" * 80 )
     print( " =" * 40 )
     print( "dbDB".center(80) )
@@ -317,8 +328,8 @@ def main():
     database = None
     indexfile = None
     
-    showoptions(True)
     # loop forever until exit
+    showoptions(True)
     while True:
         option = input("dbDB>")
        
