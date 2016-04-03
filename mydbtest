@@ -14,9 +14,9 @@ SEED = 1000000
 #=============================================================================
 # Function: Takes args and does thing
 #=============================================================================
-# args:
+# ARGUMENTS:
 #
-# wat do:
+# ABOUT:
 #
 
 def create_DB( datatype ):
@@ -58,9 +58,9 @@ def create_DB( datatype ):
 #=============================================================================
 # Function: Takes args and does thing
 #=============================================================================
-# args:
+# ARGUMENTS:
 #
-# wat do:
+# ABOUT:
 #
 #Code modified from sample code in notes
 def populate( database ):
@@ -104,9 +104,9 @@ def populate( database ):
 #=============================================================================
 # Function:
 #=============================================================================
-# args:
+# ARGUMENTS:
 #
-# wat do:
+# ABOUT:
 #
 def get_withKey( database ):
     key = input( "Enter the key: " ).lower()
@@ -127,9 +127,9 @@ def get_withKey( database ):
 #=============================================================================
 # Function:
 #=============================================================================
-# args:
+# ARGUMENTS:
 #
-# wat do:
+# ABOUT:
 #
 def get_withData( database, indexfile ):
     value = input( "Enter the data: " ).lower()
@@ -158,9 +158,9 @@ def get_withData( database, indexfile ):
 #=============================================================================
 # Function:
 #=============================================================================
-# args:
+# ARGUMENTS:
 #
-# wat do:
+# ABOUT:
 #
 def get_withRange( database, datatype ):
     low_value = input( "Enter the low valued key: " ).lower()
@@ -203,27 +203,35 @@ def get_withRange( database, datatype ):
 #   print out appropriate messages depending on the current status of these
 #   databases.
 #
-def demolish_DB( database, indexfile ):
+# WARNING:
+#       If there is ever an error with the application, we cannot properly
+#   demolish the database and it may be left in the temporary file. 
+#
+def demolish_DB( database, indexfile, verbose=False ):
     removeDB = db.DB()
     
     # Remove INDEXFILE
-    if indexfile:
-        try:
-            removeDB.remove( INDEXFILE )
-            print( INDEXFILE, "demolished." )
-        except db.DBNoSuchFileError:
+    try:
+        if indexfile:
+            indexfile.close()
+        removeDB.remove( INDEXFILE )
+        print( INDEXFILE, "demolished." )
+    except db.DBNoSuchFileError:
+        if verbose:
             noDBMsg = "The database at " + INDEXFILE + " does not exist!"
             print( noDBMsg )
-        except Exception as e:
-            print( e )
-            print( "Something unexpected occurred!" )
-            print( "Type 'make' to ensure next run is clean!")
-            exit()
+    except Exception as e:
+        print( e )
+        print( "Something unexpected occurred!" )
+        print( "Type 'make' to ensure next run is clean!" )
+        exit()
     removeDB.close()
     
     removeDB = db.DB()      # closing/reopening is neccessary
     # Remove DATABASE
     try:
+        if database:
+            database.close()
         removeDB.remove( DATABASE )
         print( DATABASE, "demolished." )
     except db.DBNoSuchFileError:
@@ -232,7 +240,7 @@ def demolish_DB( database, indexfile ):
     except Exception as e:
         print( e )
         print( "Something unexpected occurred!" )
-        print( "Type 'make' to ensure next run is clean!")
+        print( "Type 'make' to ensure next run is clean!" )
         exit()  
     removeDB.close()
     
@@ -241,9 +249,9 @@ def demolish_DB( database, indexfile ):
 #=============================================================================
 # Function: 
 #=============================================================================
-# args:
+# ARGUMENTS:
 #
-# wat do:
+# ABOUT:
 #
 # Returns a tuple of (primary datatype, secondary datatype)
 def get_datatype():
@@ -278,19 +286,20 @@ def get_datatype():
     return datatype
     
 #=============================================================================
-# Function:
+# Function: showoptions
 #=============================================================================
-# args:
+# ARGUMENTS:
 #
-# wat do:
+# ABOUT:
 #
-def showoptions(new=False):
+def showoptions( new=False ):
     if not new:
         input( "\nPress enter to return to menu\n" )
+        
     #print( chr(27) + "[2J" )
     os.system("clear")
 
-     
+    # dbDB text header 
     print( "\r" + "=" * 80 )
     print( " =" * 40 )
     print( "dbDB".center(80) )
@@ -298,7 +307,8 @@ def showoptions(new=False):
 
     options = [ "Create/Populate Database", "Get with KEY", "Get with DATA", \
                 "Get with RANGE", "Demolish Database", "Exit" ]
-                
+    
+    # prints the above options in a nice format
     for index in range( len( options ) ):
         optStr = "[" + str(index) + "]: " + options[index]
         print( optStr )
@@ -306,11 +316,12 @@ def showoptions(new=False):
 
 
 #=============================================================================
-# Function:
+# Function: main
 #=============================================================================
-# args:
+# ARGUMENTS:
+#       N/A
 #
-# wat do:
+# ABOUT:
 #
 def main():
     datatype = get_datatype()
@@ -318,6 +329,7 @@ def main():
     indexfile = None
     
     showoptions(True)
+    
     # loop forever until exit
     while True:
         option = input("dbDB>")
@@ -363,7 +375,9 @@ def main():
         # Exit
         elif option == '5':
             if database:
-                print( "ERROR:\tYou are not allowed to quit without demolishing first." )
+                errMsg = "ERROR:\tYou are not allowed to quit " +\
+                         "without demolishing first."
+                print( errMsg )
                 continue
             break
             
@@ -371,13 +385,17 @@ def main():
         else:
             errMsg = "ERROR:\tYou must specify one of the options listed."
             print( errMsg )
+            
         showoptions()
-    os.system("clear")
         
+    os.system( "clear" )
+    
+#        
 if __name__ == "__main__":
     try:
         main()
     except KeyboardInterrupt:
-        print("Sudden close!\nForcing removal of database")
-        demolish_DB(True, True)
-        print("Exit was successful")
+        print()
+        print( "Sudden close!\nForcing removal of database..." )
+        demolish_DB( False, False )
+        print( "Exit was successful." )
