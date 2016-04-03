@@ -86,11 +86,12 @@ def populate( database ):
         value = ""
         for i in range(vrng):
             value += str( chr( 97 + random.randint( 0, 25 ) ) )
-
+        #save = key + ":" + value
         key = key.encode( "UTF-8" )
         value = value.encode( "UTF-8" )
         try:
             database.put( key, value, flags=db.DB_NOOVERWRITE )
+            #print( save )
             #print("Key: ", key)
             #print("Value : ", value)
         except db.DBKeyExistError as e:
