@@ -28,6 +28,7 @@ def create_DB( datatype ):
     except Exception as e:
         print("Error occurred when opening database: Err 01")
         print(e)
+        return None, None
     indexfile = None
     if datatype[1]:
         indexfile = db.DB()
@@ -206,7 +207,7 @@ def demolish_DB( database, indexfile ):
     removeDB = db.DB()
     
     # Remove INDEXFILE
-    if indexfile != None:
+    if indexfile:
         try:
             removeDB.remove( INDEXFILE )
             print( INDEXFILE, "demolished." )
@@ -316,8 +317,8 @@ def main():
     database = None
     indexfile = None
     
-    # loop forever until exit
     showoptions(True)
+    # loop forever until exit
     while True:
         option = input("dbDB>")
        
@@ -374,4 +375,9 @@ def main():
     os.system("clear")
         
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        print("Sudden close!\nForcing removal of database")
+        demolish_DB(True, True)
+        print("Exit was successful")
