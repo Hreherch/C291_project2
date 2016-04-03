@@ -31,7 +31,6 @@ def create_DB( datatype ):
         print(e)
         return None, None
 
-
     indexfile = None
     if datatype[1]:
         #Open indexfile if specified
@@ -108,6 +107,7 @@ def populate( database ):
             sys.stdout.write("".join(progressbar))
             sys.stdout.flush()
             count -= 1
+    print(key)
 
     
 #=============================================================================
@@ -195,8 +195,9 @@ def get_withRange( database, datatype, low_value=None, high_value=None ):
         start = time()
         result = cursor.set_range( low_value )
         while result:
-            if result[0] <= high_value:
-                record_count += 1
+            if result[0] > high_value:
+                break
+            record_count += 1
             result = cursor.next()
 
     elif datatype[0] == db.DB_HASH:
@@ -406,6 +407,7 @@ def main():
         else:
             errMsg = "ERROR:\tYou must specify one of the options listed."
             print( errMsg )
+            continue
             
         showoptions()
         
