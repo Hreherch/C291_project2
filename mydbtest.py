@@ -196,6 +196,8 @@ def get_withData( outputFile, database, indexfile, value=None ):
         result = cursor.pget( value, None, flags=db.DB_SET )
         while result:
             record_count += 1
+            keys.append( result[0] )
+            datum.append( result[1] )
             result = cursor.pget( db.DB_NEXT_DUP )
     else:
         cursor = database.cursor()
@@ -224,6 +226,9 @@ def get_withData( outputFile, database, indexfile, value=None ):
 # ABOUT:
 #
 def get_withRange( outputFile, database, datatype, low_value=None, high_value=None ):
+    keys = []
+    datum = []
+    
     if not (low_value and high_value):
         low_value = input( "Enter the low valued key: " ).lower()
         high_value = input( "Enter the high valued key: " ).lower()
@@ -241,6 +246,8 @@ def get_withRange( outputFile, database, datatype, low_value=None, high_value=No
             if result[0] > high_value:
                 break
             record_count += 1
+            keys.append( result[0] )
+            datum.append( result[1] )
             result = cursor.next()
 
     elif datatype[0] == db.DB_HASH:
@@ -249,10 +256,13 @@ def get_withRange( outputFile, database, datatype, low_value=None, high_value=No
         while result:
             if low_value <= result[0] <= high_value:
                 record_count += 1
+                keys.append( result[0] )
+                datum.append( result[1] )
             result = cursor.next()
 
     total_time = round( ( time() - start ) * 10e6 )
     cursor.close()
+    writeAnswer( outputFile, keys, datum )
     print( "Number of Records:", record_count )
     print( "Time Elapsed (micro seconds)", total_time )
     return total_time
