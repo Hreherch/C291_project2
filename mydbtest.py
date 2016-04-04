@@ -16,8 +16,14 @@ SEED = 1000000
 # Function: create_DB
 #=============================================================================
 # ARGUMENTS:
+#       datatype:   A tuple of database types for the databases, selected by
+#                   the user when the program started.
 #
 # ABOUT:
+#       Opens database(s) for use with the program. Then calls populate to
+#   put the randomized/seeded entries into the database. 
+#
+#   Returns the populated databases.
 #
 def create_DB( datatype ):
     print("Creating Database...") 
@@ -65,10 +71,12 @@ def create_DB( datatype ):
 # Function: Takes args and does thing
 #=============================================================================
 # ARGUMENTS:
+#       database:   The database that is to be populated by this function
 #
 # ABOUT:
+#       Uses the sample python3.py code provided to populate the given 
+#   database with the same seed.
 #
-#Code modified from sample code in notes
 def populate( database ):
     print("Populating Database...")
 
@@ -97,6 +105,7 @@ def populate( database ):
         value = ""
         for i in range(vrng):
             value += str( chr( 97 + random.randint( 0, 25 ) ) )
+            
         key = key.encode( "UTF-8" )
         value = value.encode( "UTF-8" )
 
@@ -115,14 +124,21 @@ def populate( database ):
 # Function: Takes args and does thing
 #=============================================================================
 # ARGUMENTS:
+#       outputFile: The file pointer to "answers" where gotten key:value pairs
+#                   will be written.
+#
+#       keys:       A list of UTF-8 encoded keys.
+#
+#       datum:      A list of UTF-8 encoded values.
 #
 # ABOUT:
+#       Writes all the give key:value pairs to the given outputFile.
 #
-#Code modified from sample code in notes
 def writeAnswer( outputFile, keys, datum ):
     for index in range( len(keys) ):
         outputFile.write( keys[index].decode( "UTF-8" ) + "\n" )
         outputFile.write( datum[index].decode( "UTF-8" ) + "\n\n" )
+    
     
 #=============================================================================
 # Function: get_withKey
@@ -139,6 +155,8 @@ def writeAnswer( outputFile, keys, datum ):
 # ABOUT:
 #       Gets the data from the created database (from create_DB) and reports
 #   the amount of data/time it took to do this. 
+#
+#   Returns the time it took for the search to run
 #
 def get_withKey( outputFile, database, key=None ):
     keys = []
@@ -176,8 +194,22 @@ def get_withKey( outputFile, database, key=None ):
 # Function: get_withData
 #=============================================================================
 # ARGUMENTS:
+#       outputFile: The file pointer to write answers to.
+#
+#       database:   The database to be searched for the data.
+#
+#       indexfile:  If there is an indexfile attached to the database, pass it
+#                   as such.
+#
+#       value:      Not needed for running, if specified will allow user to 
+#                   bypass stdin method of data entry (i.e. for testing 
+#                   purposes).
 #
 # ABOUT:
+#       Checks which keys match the data that are given, ensures that the 
+#   returned values are written to answers.
+#
+#   Returns the time it took for the search to run
 #
 def get_withData( outputFile, database, indexfile, value=None ):
     keys = []
@@ -222,10 +254,26 @@ def get_withData( outputFile, database, indexfile, value=None ):
 # Function: get_withRange
 #=============================================================================
 # ARGUMENTS:
+#       outputFile: The file pointer to write answers to.
+#
+#       database:   The database to be searched for the data.
+#
+#       indexfile:  If there is an indexfile attached to the database, pass it
+#                   as such.
+#
+#       low_value:  Not needed for running, if specified will allow user to 
+#                   bypass stdin method of range entry (i.e. for testing 
+#                   purposes).
+#
+#       high_value: see low_value
 #
 # ABOUT:
+#   
 #
-def get_withRange( outputFile, database, datatype, low_value=None, high_value=None ):
+#   Returns the time it took for the search to run
+#
+def get_withRange( outputFile, database, datatype, \
+                   low_value=None, high_value=None ):
     keys = []
     datum = []
     
