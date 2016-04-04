@@ -22,21 +22,21 @@ def querytest( database, indexfile, datatype ):
     total_time = 0
     for key in pairs:
         total_time += get_withKey( database, key )
-    avg1 = total_time/len(pairs)
+    avg1 = str(total_time/len(pairs))
 
     #Query 2 Test
     total_time = 0
     for value in pairs.values():
         total_time += get_withData( database, indexfile, value )
         print("Total time:", total_time)
-    avg2 = total_time/len(pairs)
+    avg2 = str(total_time/len(pairs))
 
     #Query 3 Test
     total_time = 0
     rangelist = [('a','ab'),('f','fb'),('m','mb'),('r','rb')]
     for low_value, high_value in rangelist:
         total_time += get_withRange( database, datatype, low_value, high_value )
-    avg3 = total_time/len(rangelist)
+    avg3 = str(total_time/len(rangelist))
     return avg1,avg2,avg3
 
 def main():
@@ -59,12 +59,17 @@ def main():
     demolish_DB( database, indexfile )
 
     print()
-    print("Btree")
-    print("Query 1,2,3 time:", results_btree)
-    print("Hash")
-    print("Query 1,2,3 time:", results_hash)
-    print("Indexfile")
-    print("Query 1,2,3 time:", results_indexfile)
+    print("   Time   | Query 1   Query 2   Query3")
+    print("--------------------------------------")
+    print("Btree     |", results_btree[0].ljust(9),
+                         results_btree[1].ljust(9),
+                         results_btree[2].ljust(9))
+    print("Hash      |", results_hash[0].ljust(9),
+                         results_hash[1].ljust(9),
+                         results_hash[2].ljust(9))
+    print("Indexfile |", results_indexfile[0].ljust(9),
+                         results_indexfile[1].ljust(9),
+                         results_indexfile[2].ljust(9))
     print()
 
 if __name__ == "__main__":
