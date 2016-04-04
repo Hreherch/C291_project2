@@ -3,22 +3,21 @@ from mydbtest import *
 
 
 #Temporarily hardcoded
-pairs = {'lmsqugafxmclwmswxebhacoixgxyrklsatgarvwmkjqenolfdlavimjffnrfuvifsgixcaukohznwgxesgh':
-         'rjogbzouspdbakoehdgvsheluoshaztogxrzdtruhdbeyefeagbtxphyebyvfjkpqvljcckyczyomjueslkiwaijocbycqnzsznnf',
+pairs = {'zgcueqpwhfxsnaasbhixdnehnodnuvixzdnimqetegolmcyhbpefrlownuqlccmc': 
+         'kfgwarjkyhntqtomxxjbshercozsxrplsulndyabcmpovtyxpaqhkqbyybuoddigwipjfsrjlad',
 
-         'mirxqefdvfniukkttyiijyxcxadlfvbacumghojkchsikxlywxcufoqbgtifuulnucmzbzhqmdbifbekkyvgtyd':
-         'ytmgfuhepzxpstfijwcggoijvijjhidjjzmtklwolacdzohdtfuwwlyawgoaijrgpaphkcpntaaroyrxwfojksungtrqyheolzimonnfgkenanmufxecusgho',
+         'fvrmdynxvfntfhriapeqqrmqgoxgthtgerrqcgmfewpvlrrzzbstrtrxlmyvuxjjtjarumynzxgwvwobzlj':
+         'dxtbzsszxvzokkqlarkrxhyqadvghjidecbhrnatgnbnfbeykxciorcmtoenftdmzergtetpcwqxjawtwbr',
 
-         'bdkzzlmjdhhtvteipvucmuvcoulydwpviktrijcuntgxgcsillxopexakuacvdve': 
-         'mzgliowuchxnwzekdmnxkygczjrktxudhtvqwycwhlkxzurgrklmvflpitzetsxkmenmptsterfrebhutudoffrxrdnkcglonwjoymysfobiyv',
+         'dalpgicfhxaflrdfgjjmtzzpxqzrreniqnoigdqdfcvlvmikkbnujxnkayfizrrxxwdyfivdyykrtwgznscjrdfjmcaaiqmauamysghbdhrjwvdlrme':
+         'yxwkffkavcuywdryewipqgwyxxmeolqyevwvicsdegeuziewtaktbyrmtefzbrwdisorxcirirq',
 
-         'oyzpyiexxlroxruloaejoxhqhvevmcrbkoqgnselmwxnqsreikqnfklqpnsrqzijauspjyflldrenatgjnkqxxwlte':
-         'mrmbenjlnubtbwgnkexnklwaqqwdwwkofzqferxveokhbwxwremyicvkypzmkpryynzunm' }
+         'ltuawoyrlapcmktfgkvisdvnrxwaleygidksikdeqfayhnvxrtixwhynzcylqxliqqxf':
+         'nzrntdhqzxqtjgurxmwnnvhlmlrwbqrsxpoxzccgesjwuirrnjeamyjhkfapvbwkqijjhhmjufkcbwoqxjsfuqkoxibsyxfaftxoeqimvncdgubtsuxypd' }
 
 
 def querytest( database, indexfile, datatype ):
 
-    print("In query test:", indexfile)
     #Query 1 Test
     total_time = 0
     for key in pairs:
@@ -40,29 +39,39 @@ def querytest( database, indexfile, datatype ):
     avg3 = total_time/len(rangelist)
     return avg1,avg2,avg3
 
-#BTREE
-datatype = (db.DB_BTREE, None)
-database, indexfile = create_DB( datatype )
-results_btree = querytest( database, indexfile, datatype )
-demolish_DB( database, indexfile )
+def main():
+    #BTREE
+    datatype = (db.DB_BTREE, None)
+    database, indexfile = create_DB( datatype )
+    results_btree = querytest( database, indexfile, datatype )
+    demolish_DB( database, indexfile )
 
-#HASH
-datatype = (db.DB_HASH, None)
-database, indexfile = create_DB( datatype )
-results_hash = querytest( database, indexfile, datatype )
-demolish_DB( database, indexfile )
+    #HASH
+    datatype = (db.DB_HASH, None)
+    database, indexfile = create_DB( datatype )
+    results_hash = querytest( database, indexfile, datatype )
+    demolish_DB( database, indexfile )
 
-#INDEXFILE
-datatype = (db.DB_BTREE, db.DB_BTREE)
-database, indexfile = create_DB( datatype )
-results_indexfile = querytest( database, indexfile, datatype )
-demolish_DB( database, indexfile )
+    #INDEXFILE
+    datatype = (db.DB_BTREE, db.DB_BTREE)
+    database, indexfile = create_DB( datatype )
+    results_indexfile = querytest( database, indexfile, datatype )
+    demolish_DB( database, indexfile )
 
-print()
-print("Btree")
-print("Query 1,2,3 time:", results_btree)
-print("Hash")
-print("Query 1,2,3 time:", results_hash)
-print("Indexfile")
-print("Query 1,2,3 time:", results_indexfile)
-print()
+    print()
+    print("Btree")
+    print("Query 1,2,3 time:", results_btree)
+    print("Hash")
+    print("Query 1,2,3 time:", results_hash)
+    print("Indexfile")
+    print("Query 1,2,3 time:", results_indexfile)
+    print()
+
+if __name__ == "__main__":
+    try:
+        main()
+    except KeyboardInterrupt:
+        print()
+        print( "Sudden close!\nForcing removal of database..." )
+        demolish_DB( None, None )
+        print( "Exit was successful" )

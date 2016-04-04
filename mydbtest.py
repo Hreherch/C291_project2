@@ -107,7 +107,6 @@ def populate( database ):
             sys.stdout.write("".join(progressbar))
             sys.stdout.flush()
             count -= 1
-    print(key)
 
     
 #=============================================================================
@@ -132,7 +131,7 @@ def get_withKey( database, key=None ):
 
     total_time = round( ( time() - start ) * 10e6 )
     cursor.close()
-    print( "\nNumber of Records:", record_count )
+    print( "Number of Records:", record_count )
     print( "Time Elapsed (micro seconds)", total_time )
     return total_time
  
@@ -169,7 +168,7 @@ def get_withData( database, indexfile, value=None ):
 
     total_time = round( ( time() - start ) * 10e6 )
     cursor.close()
-    print( "\nNumber of Records:", record_count )
+    print( "Number of Records:", record_count )
     print( "Time Elapsed (micro seconds)", total_time )
     return total_time
 
@@ -210,7 +209,7 @@ def get_withRange( database, datatype, low_value=None, high_value=None ):
 
     total_time = round( ( time() - start ) * 10e6 )
     cursor.close()
-    print( "\nNumber of Records:", record_count )
+    print( "Number of Records:", record_count )
     print( "Time Elapsed (micro seconds)", total_time )
     return total_time
  
@@ -319,7 +318,7 @@ def get_datatype():
 #
 def showoptions( new=False ):
     if not new:
-        input( "\nPress enter to return to menu\n" )
+        input( "Press enter to return to menu\n" )
     os.system("clear")
 
     # dbDB text header 
@@ -413,7 +412,6 @@ def main():
         
     os.system( "clear" )
     
-#        
 if __name__ == "__main__":
     try:
         main()
@@ -421,4 +419,4 @@ if __name__ == "__main__":
         print()
         print( "Sudden close!\nForcing removal of database..." )
         demolish_DB( None, None )
-        print( "Exit was successful." )
+        print( "Exit was successful" )
