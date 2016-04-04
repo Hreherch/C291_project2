@@ -5,19 +5,20 @@ import random
 from time import time
 from bsddb3 import db
 
+# Constants for bsddb3 usage/generation
 DATABASE = "/tmp/doupton_db/dbdb.db"
 INDEXFILE = "/tmp/doupton_db/index.db"
 DB_SIZE = 100000
 SEED = 1000000
 
+
 #=============================================================================
-# Function: Takes args and does thing
+# Function: create_DB
 #=============================================================================
 # ARGUMENTS:
 #
 # ABOUT:
 #
-
 def create_DB( datatype ):
     print("Creating Database...") 
 
@@ -59,6 +60,7 @@ def create_DB( datatype ):
     print("|~~~~~~Success!~~~~~~|")
     return database, indexfile
 
+    
 #=============================================================================
 # Function: Takes args and does thing
 #=============================================================================
@@ -107,17 +109,42 @@ def populate( database ):
             sys.stdout.write("".join(progressbar))
             sys.stdout.flush()
             count -= 1
-    print(key)
 
-    
+            
 #=============================================================================
-# Function:
+# Function: Takes args and does thing
 #=============================================================================
 # ARGUMENTS:
 #
 # ABOUT:
 #
-def get_withKey( database, key=None ):
+#Code modified from sample code in notes
+def writeAnswer( outputFile, keys, datum ):
+    for index in range( len(keys) ):
+        outputFile.write( keys[index].decode( "UTF-8" ) + "\n" )
+        outputFile.write( datum[index].decode( "UTF-8" ) + "\n\n" )
+    
+#=============================================================================
+# Function: get_withKey
+#=============================================================================
+# ARGUMENTS:
+#       outputFile: The file pointer to write answers to.
+#
+#       database:   The database to be searched for the key.
+#
+#       key:        Not needed for running, if specified will allow user to 
+#                   bypass stdin method of key entry (i.e. for testing 
+#                   purposes).
+#
+# ABOUT:
+#       Gets the data from the created database (from create_DB) and reports
+#   the amount of data/time it took to do this. 
+#
+def get_withKey( outputFile, database, key=None ):
+    keys = []
+    datum = []
+    
+    # If not called with a key directly, ask for key via stdin
     if not key:
         key = input( "Enter the key: " ).lower()
     key = key.encode( "UTF-8" )
@@ -127,23 +154,35 @@ def get_withKey( database, key=None ):
     cursor = database.cursor()
 
     start = time()
-    if cursor.get( key, None, flags=db.DB_SET ):
+    get = cursor.get( key, None, flags=db.DB_SET )
+    if get:
         record_count += 1
+        keys.append( get[0] )
+        datum.append( get[1] )
 
-    total_time = round( ( time() - start ) * 10e6 )
+    total_time = round( ( time() - start ) * 10e6 ) 
     cursor.close()
-    print( "\nNumber of Records:", record_count )
+    
+    # If there was an answer, write it to the output file.
+    if get:
+        writeAnswer( outputFile, keys, datum )
+        
+    print( "Number of Records:", record_count )
     print( "Time Elapsed (micro seconds)", total_time )
     return total_time
  
+ 
 #=============================================================================
-# Function:
+# Function: get_withData
 #=============================================================================
 # ARGUMENTS:
 #
 # ABOUT:
 #
-def get_withData( database, indexfile, value=None ):
+def get_withData( outputFile, database, indexfile, value=None ):
+    keys = []
+    datum = []
+    
     if not value:
         value = input( "Enter the data: " ).lower()
 
@@ -165,22 +204,26 @@ def get_withData( database, indexfile, value=None ):
         while result:
             if result[1] == value:
                 record_count += 1
+                keys.append( result[0] )
+                datum.append( result[1] )
             result = cursor.next()
 
     total_time = round( ( time() - start ) * 10e6 )
     cursor.close()
-    print( "\nNumber of Records:", record_count )
+    writeAnswer( outputFile, keys, datum )
+    print( "Number of Records:", record_count )
     print( "Time Elapsed (micro seconds)", total_time )
     return total_time
 
+    
 #=============================================================================
-# Function:
+# Function: get_withRange
 #=============================================================================
 # ARGUMENTS:
 #
 # ABOUT:
 #
-def get_withRange( database, datatype, low_value=None, high_value=None ):
+def get_withRange( outputFile, database, datatype, low_value=None, high_value=None ):
     if not (low_value and high_value):
         low_value = input( "Enter the low valued key: " ).lower()
         high_value = input( "Enter the high valued key: " ).lower()
@@ -210,15 +253,17 @@ def get_withRange( database, datatype, low_value=None, high_value=None ):
 
     total_time = round( ( time() - start ) * 10e6 )
     cursor.close()
-    print( "\nNumber of Records:", record_count )
+    print( "Number of Records:", record_count )
     print( "Time Elapsed (micro seconds)", total_time )
     return total_time
+ 
  
 #=============================================================================
 # Function: demolish_DB
 #=============================================================================
 # ARGUMENTS:
 #       database:   The main db.DB() object used to store the key/value pairs
+#
 #       indexfile:  The associated db.DB() object used in the 'indexfile' run 
 #                   of mydbtest
 #
@@ -242,6 +287,7 @@ def demolish_DB( database, indexfile, verbose=False ):
         removeDB.remove( INDEXFILE )
         print( INDEXFILE, "demolished." )
     except db.DBNoSuchFileError:
+        # Since INDEXFILE is not always used, do not print unless specified
         if verbose:
             noDBMsg = "The database at " + INDEXFILE + " does not exist!"
             print( noDBMsg )
@@ -250,9 +296,10 @@ def demolish_DB( database, indexfile, verbose=False ):
         print( "Something unexpected occurred!" )
         print( "Type 'make' to ensure next run is clean!" )
         exit()
+        
     removeDB.close()
-    
     removeDB = db.DB()      # closing/reopening is neccessary
+    
     # Remove DATABASE
     try:
         if database != None:
@@ -267,59 +314,75 @@ def demolish_DB( database, indexfile, verbose=False ):
         print( "Something unexpected occurred!" )
         print( "Type 'make' to ensure next run is clean!" )
         exit()  
+        
     removeDB.close()
     
     return None, None
 
+    
 #=============================================================================
-# Function: 
+# Function: get_datatype 
 #=============================================================================
 # ARGUMENTS:
+#       N/A
 #
 # ABOUT:
+#       Based on a user's input argument (i.e. hash, btree...), returns the DB
+#   type(s) as a tuple associated with their choice for use with create_DB. 
+#   Tuple format: (primary datatype, secondary datatype)
 #
-# Returns a tuple of (primary datatype, secondary datatype)
 def get_datatype():
     if len( sys.argv ) == 1:
         errMsg = sys.argv[0] + ": No DB type specified\n" +\
                  "Try '" + sys.argv[0] + " help' for more information.\n"
         print( errMsg )
         exit()
+        
     if len( sys.argv ) > 2:
         errMsg = sys.argv[0] + ": too many options specified\n" +\
                  "Try '" + sys.argv[0] + " help' for more information.\n"
         print( errMsg )
         exit()
+        
     datatype = sys.argv[1].lower()
     if datatype == "btree":
         datatype = (db.DB_BTREE, None)
+        
     elif datatype == "hash":
         datatype = (db.DB_HASH, None)
+        
     elif datatype == 'indexfile':
         datatype = (db.DB_BTREE, db.DB_BTREE)
+        
     elif datatype == "help":
         helpMsg = "Usage: 'mydbtest OPTION'\n" +\
                   "options: 'btree', 'hash', 'indexfile', 'help'\n"
         print( helpMsg )
         exit()
+        
     else:
         errMsg = sys.argv[0] + ": invalid option -- '" +\
                  sys.argv[1] + "'\n" +\
                  "Try '" + sys.argv[0] + " help' for more information.\n"
         print( errMsg )
         exit()
+        
     return datatype
+    
     
 #=============================================================================
 # Function: showoptions
 #=============================================================================
 # ARGUMENTS:
+#       new: True if you want to prompt the user to press enter before
+#            returning to the window that will be printed
 #
 # ABOUT:
+#       Prints a menu that shows the user their options with mydbtest.
 #
 def showoptions( new=False ):
     if not new:
-        input( "\nPress enter to return to menu\n" )
+        input( "Press enter to return to menu\n" )
     os.system("clear")
 
     # dbDB text header 
@@ -335,23 +398,28 @@ def showoptions( new=False ):
     for index in range( len( options ) ):
         optStr = "[" + str(index) + "]: " + options[index]
         print( optStr )
+        
     print()
 
 
 #=============================================================================
-# Function: main
+# Function: mydbtest
 #=============================================================================
 # ARGUMENTS:
-#       N/A
+#       outputFile: The text file used to show key:value answer pairs after
+#                   the run of the program.
 #
 # ABOUT:
+#       The main function for mydbtest.py, prints out a menu of options and
+#   takes user input to aid the user getting from various functions easily.
 #
-def main():
+def mydbtest( outputFile ):
     datatype = get_datatype()
     database = None
     indexfile = None
     
-    showoptions(True)
+    showoptions( True )
+    
     # loop forever until exit
     while True:
         option = input("dbDB>")
@@ -372,7 +440,7 @@ def main():
                 errMsg = "ERROR:\tYou must first create the database."
                 print( errMsg )
                 continue
-            get_withKey( database )
+            get_withKey( outputFile, database )
         
         # Get with DATA
         elif option == '2':
@@ -380,7 +448,7 @@ def main():
                 errMsg = "ERROR:\tYou must first create the database."
                 print( errMsg )
                 continue
-            get_withData( database, indexfile )
+            get_withData( outputFile, database, indexfile )
         
         # Get with RANGE
         elif option == '3':
@@ -388,7 +456,7 @@ def main():
                 errMsg = "ERROR:\tYou must first create the database."
                 print( errMsg )
                 continue
-            get_withRange( database, datatype )
+            get_withRange( outputFile, database, datatype )
             
         # Demolish Database
         elif option == '4':
@@ -410,15 +478,21 @@ def main():
             continue
             
         showoptions()
-        
-    os.system( "clear" )
     
-#        
+    # Clears the terminal when a user exits
+    os.system( "clear" )
+ 
+ 
+# Runs main as try/except, this allows us to cull the database properly
+# in the event of a keyboard interrupt.
 if __name__ == "__main__":
     try:
-        main()
+        outputFile = open( "answers", 'w' )
+        mydbtest( outputFile )
+        outputFile.close()
     except KeyboardInterrupt:
         print()
         print( "Sudden close!\nForcing removal of database..." )
         demolish_DB( None, None )
-        print( "Exit was successful." )
+        outputFile.close()
+        print( "Exit was successful" )
