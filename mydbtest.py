@@ -172,17 +172,17 @@ def get_withKey( outputFile, database, key=None ):
     cursor = database.cursor()
 
     start = time()
-    get = cursor.get( key, None, flags=db.DB_SET )
-    if get:
+    result = cursor.get( key, None, flags=db.DB_SET )
+    if result:
         record_count += 1
-        keys.append( get[0] )
-        datum.append( get[1] )
+        keys.append( result[0] )
+        datum.append( result[1] )
 
     total_time = round( ( time() - start ) * 10e6 ) 
     cursor.close()
     
     # If there was an answer, write it to the output file.
-    if get:
+    if result:
         writeAnswer( outputFile, keys, datum )
         
     print( "Number of Records:", record_count )
@@ -228,8 +228,8 @@ def get_withData( outputFile, database, indexfile, value=None ):
         result = cursor.pget( value, None, flags=db.DB_SET )
         while result:
             record_count += 1
-            keys.append( result[0] )
-            datum.append( result[1] )
+            keys.append( result[1] )
+            datum.append( result[0] )
             result = cursor.pget( db.DB_NEXT_DUP )
     else:
         cursor = database.cursor()
@@ -461,7 +461,7 @@ def showoptions( new=False ):
 
 
 #=============================================================================
-# Function: mydbtest
+# Function: main
 #=============================================================================
 # ARGUMENTS:
 #       outputFile: The text file used to show key:value answer pairs after
@@ -471,8 +471,9 @@ def showoptions( new=False ):
 #       The main function for mydbtest.py, prints out a menu of options and
 #   takes user input to aid the user getting from various functions easily.
 #
-def mydbtest( outputFile ):
+def main():
     datatype = get_datatype()
+    outputFile = open( "answers", 'w' )
     database = None
     indexfile = None
     
@@ -539,15 +540,14 @@ def mydbtest( outputFile ):
     
     # Clears the terminal when a user exits
     os.system( "clear" )
+    outputFile.close()
  
  
 # Runs main as try/except, this allows us to cull the database properly
 # in the event of a keyboard interrupt.
 if __name__ == "__main__":
     try:
-        outputFile = open( "answers", 'w' )
-        mydbtest( outputFile )
-        outputFile.close()
+        main()
     except KeyboardInterrupt:
         print()
         print( "Sudden close!\nForcing removal of database..." )
