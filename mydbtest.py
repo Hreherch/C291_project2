@@ -11,7 +11,6 @@ INDEXFILE = "/tmp/doupton_db/index.db"
 DB_SIZE = 100000
 SEED = 1000000
 
-
 #=============================================================================
 # Function: create_DB
 #=============================================================================
@@ -454,7 +453,7 @@ def showoptions( new=False ):
     
     # prints the above options in a nice format
     for index in range( len( options ) ):
-        optStr = "[" + str(index) + "]: " + options[index]
+        optStr = "[" + str(index + 1) + "]: " + options[index]
         print( optStr )
         
     print()
@@ -484,7 +483,7 @@ def main():
         option = input("dbDB>")
        
         # Create/Populate Database
-        if option == '0':
+        if option == '1':
             if database != None:
                 errMsg = "ERROR:\tThere is an active Database already.\n" +\
                          "You cannot populate another without " +\
@@ -494,7 +493,7 @@ def main():
             database, indexfile = create_DB( datatype )
         
         # Get with KEY
-        elif option == '1':
+        elif option == '2':
             if not database:
                 errMsg = "ERROR:\tYou must first create the database."
                 print( errMsg )
@@ -502,7 +501,7 @@ def main():
             get_withKey( outputFile, database )
         
         # Get with DATA
-        elif option == '2':
+        elif option == '3':
             if not database:
                 errMsg = "ERROR:\tYou must first create the database."
                 print( errMsg )
@@ -510,7 +509,7 @@ def main():
             get_withData( outputFile, database, indexfile )
         
         # Get with RANGE
-        elif option == '3':
+        elif option == '4':
             if not database:
                 errMsg = "ERROR:\tYou must first create the database."
                 print( errMsg )
@@ -518,11 +517,11 @@ def main():
             get_withRange( outputFile, database, datatype )
             
         # Demolish Database
-        elif option == '4':
+        elif option == '5':
             database, indexfile = demolish_DB( database, indexfile )
             
         # Exit
-        elif option == '5':
+        elif option == '6':
             if database != None:
                 errMsg = "ERROR:\tYou are not allowed to quit " +\
                          "without demolishing first."
