@@ -48,7 +48,7 @@ def cleanTestFile():
 # not including initial db setup
 def generateKeyTest( outputFile, dbDict ):
     for i in range( 100 ):
-        outputFile.write( "1\n" )
+        outputFile.write( "2\n" )
         keyVal = dbDict.popitem()
         outputFile.write( keyVal[0] + "\n" )
         outputFile.write( "\n" )
@@ -60,12 +60,12 @@ def keyTest( type, dbDict ):
     print( "generating test output..." )
     
     testFile = open( "test.txt", 'w' )
-    testFile.write( "0\n" )
+    testFile.write( "1\n" )
     testFile.write( "\n" )
     generateKeyTest( testFile, dbDict )
-    testFile.write( "4\n" )
+    testFile.write( "5\n" )
     testFile.write( "\n" )
-    testFile.write( "5" )
+    testFile.write( "6" )
     testFile.close()
     
     print( "generation complete." )
@@ -101,7 +101,7 @@ def keyTest( type, dbDict ):
     
 def generateDataTest( outputFile, dbDict ):
     for i in range( 100 ):
-        outputFile.write( "2\n" )
+        outputFile.write( "3\n" )
         keyVal = dbDict.popitem()
         outputFile.write( keyVal[1] + "\n" )
         outputFile.write( "\n" )
@@ -113,12 +113,12 @@ def dataTest( type, dbDict ):
     print( "generating test output..." )
     
     testFile = open( "test.txt", 'w' )
-    testFile.write( "0\n" )
+    testFile.write( "1\n" )
     testFile.write( "\n" )
     generateDataTest( testFile, dbDict )
-    testFile.write( "4\n" )
+    testFile.write( "5\n" )
     testFile.write( "\n" )
-    testFile.write( "5" )
+    testFile.write( "6" )
     testFile.close()
     
     print( "generation complete." )
@@ -160,7 +160,7 @@ def generateRangeTest( outputFile, keyList ):
         plus = random.randint( 100, 200 )
         start = keyList[ loc ]
         end = keyList[ loc + plus ]
-        outputFile.write( "3\n" )
+        outputFile.write( "4\n" )
         outputFile.write( start + "\n" )
         outputFile.write( end + "\n" )
         outputFile.write( "\n" )
@@ -180,12 +180,12 @@ def rangeTest( type, dbDict ):
     keyList.sort()
 
     testFile = open( "test.txt", 'w' )
-    testFile.write( "0\n" )
+    testFile.write( "1\n" )
     testFile.write( "\n" )    
     numRanges, numEntries = generateRangeTest( testFile, keyList )
-    testFile.write( "4\n" )
+    testFile.write( "5\n" )
     testFile.write( "\n" )
-    testFile.write( "5" )
+    testFile.write( "6" )
     testFile.close()
     
     print( "generated", numRanges, "ranges with", numEntries, "keys" )
@@ -390,10 +390,10 @@ def main():
                 type = checkARGV( type )
                 if type:
                     break
-        elif choice == '7':
-            superTest( dbDict )
-        #elif choice == '9':
-        #    exit()
+        #elif choice == '7':
+        #    superTest( dbDict )
+        elif choice == '9':
+            exit()
         else:
             print( "please make a valid choice." )
 
