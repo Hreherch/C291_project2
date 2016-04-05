@@ -8,3 +8,8 @@ create:
 # removes old directory
 delete:
 	rm -rf /tmp/doupton_db
+
+#Type 'make test' to run experiment
+test:
+	python3 experiment.py
+    

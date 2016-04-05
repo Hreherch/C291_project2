@@ -549,8 +549,6 @@ if __name__ == "__main__":
     try:
         main()
     except KeyboardInterrupt:
-        print()
         print( "Sudden close!\nForcing removal of database..." )
         demolish_DB( None, None )
-        outputFile.close()
         print( "Exit was successful" )
