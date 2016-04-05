@@ -2,15 +2,15 @@
 from mydbtest import *
 
 #Random test keys
-pairs = { 'zgcueqpwhfxsnaasbhixdnehnodnuvixzdnimqetegolmcyhbpefrlownuqlccmc':
-          'kfgwarjkyhntqtomxxjbshercozsxrplsulndyabcmpovtyxpaqhkqbyybuoddigwipjfsrjlad',
+pairs = { 'bzruwxlxbitkhotzwigevphlktnqiakgqjnlzopjpczqlmnxncjqwpyrlqobbtvydlftxmaghkjdevkumhhjjogqzwaocsqjusrdkzvtwyqsqmqjbvxenyxjztz':
+          'ncpsifrgtiicmlilzsmwvgjxnrwqplvgpqfeogeaballczvijzlfyyjpwlmvngxvgpbtawbnjbprtboc',
 
-          'fvrmdynxvfntfhriapeqqrmqgoxgthtgerrqcgmfewpvlrrzzbstrtrxlmyvuxjjtjarumynzxgwvwobzlj':
-          'dxtbzsszxvzokkqlarkrxhyqadvghjidecbhrnatgnbnfbeykxciorcmtoenftdmzergtetpcwqxjawtwbr',
+          'azcqcfilsmervsfnkhfqaanikjxtnyikxcbmiuvftdzvkdcalyeuilmdlclggbfdcznhnuebvwzdeftgkagggmliqbwjpzyymtgvqaurqppk':
+          'ljyssfuvjbjbsdboxnapduturxjnwqdagcddektsjgsqlqllihmewazodravyxlwvqhktqoeydbxsbtgqdwitsdubsczoj',
 
-          'dalpgicfhxaflrdfgjjmtzzpxqzrreniqnoigdqdfcvlvmikkbnujxnkayfizrrxxwdyfivdyykrtwgznscjrdfjmcaaiqmauamysghbdhrjwvdlrme':
-          'yxwkffkavcuywdryewipqgwyxxmeolqyevwvicsdegeuziewtaktbyrmtefzbrwdisorxcirirq',
-          
+          'xpkyxlyywcsscpeyhbbzgohgbgnjfjfkpxvllvwjkbkjqdmexmgrhniyofxzxlzuwutrjmjlfjixoakdlkytfiljxetbmwjswbogeqp':
+          'niiipgiwdbkeafdekwhcwkcmszavjeyoknlzkamclkzaopdgvihpdbwkrazgatrpwaqcstqdvqwhmwxilkvokmboljzebasiznvjx',
+
           'ltuawoyrlapcmktfgkvisdvnrxwaleygidksikdeqfayhnvxrtixwhynzcylqxliqqxf':
           'nzrntdhqzxqtjgurxmwnnvhlmlrwbqrsxpoxzccgesjwuirrnjeamyjhkfapvbwkqijjhhmjufkcbwoqxjsfuqkoxibsyxfaftxoeqimvncdgubtsuxypd' }
 
@@ -61,14 +61,14 @@ def main():
 
     print()
     print(" Time (\u00b5s) | Query 1  Query 2  Query 3")
-    print("-----------+--------------------------")
-    print("Btree      |", results_btree[0].rjust(8),
+    print("-----------+---------------------------")
+    print("Btree      |", results_btree[0].rjust(7),
                          results_btree[1].rjust(8),
                          results_btree[2].rjust(8))
-    print("Hash       |", results_hash[0].rjust(8),
+    print("Hash       |", results_hash[0].rjust(7),
                          results_hash[1].rjust(8),
                          results_hash[2].rjust(8))
-    print("Indexfile  |", results_indexfile[0].rjust(8),
+    print("Indexfile  |", results_indexfile[0].rjust(7),
                          results_indexfile[1].rjust(8),
                          results_indexfile[2].rjust(8))
     print()
