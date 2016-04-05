@@ -23,19 +23,19 @@ def querytest( outputFile, database, indexfile, datatype ):
     total_time = 0
     for key in pairs:
         total_time += get_withKey( outputFile, database, key )
-    avg1 = str(total_time/len(pairs))
+    avg1 = str(round(total_time/len(pairs)))
 
     #Query 2 Test
     total_time = 0
     for value in pairs.values():
         total_time += get_withData( outputFile, database, indexfile, value )
-    avg2 = str(total_time/len(pairs))
+    avg2 = str(round(total_time/len(pairs)))
 
     #Query 3 Test
     total_time = 0
     for low_value, high_value in rangelist:
         total_time += get_withRange( outputFile, database, datatype, low_value, high_value )
-    avg3 = str(total_time/len(rangelist))
+    avg3 = str(round(total_time/len(rangelist)))
     return avg1,avg2,avg3
 
 def main():
@@ -60,17 +60,17 @@ def main():
     outputFile.close()
 
     print()
-    print("   Time   | Query 1   Query 2   Query3")
-    print("--------------------------------------")
-    print("Btree     |", results_btree[0].ljust(9),
-                         results_btree[1].ljust(9),
-                         results_btree[2].ljust(9))
-    print("Hash      |", results_hash[0].ljust(9),
-                         results_hash[1].ljust(9),
-                         results_hash[2].ljust(9))
-    print("Indexfile |", results_indexfile[0].ljust(9),
-                         results_indexfile[1].ljust(9),
-                         results_indexfile[2].ljust(9))
+    print(" Time (\u00b5s) | Query 1  Query 2  Query 3")
+    print("-----------+--------------------------")
+    print("Btree      |", results_btree[0].rjust(8),
+                         results_btree[1].rjust(8),
+                         results_btree[2].rjust(8))
+    print("Hash       |", results_hash[0].rjust(8),
+                         results_hash[1].rjust(8),
+                         results_hash[2].rjust(8))
+    print("Indexfile  |", results_indexfile[0].rjust(8),
+                         results_indexfile[1].rjust(8),
+                         results_indexfile[2].rjust(8))
     print()
 
 if __name__ == "__main__":
