@@ -1,18 +1,18 @@
 #!/usr/bin/env python3
 from mydbtest import *
 
-#Temporarily hardcoded
-pairs = {'zgcueqpwhfxsnaasbhixdnehnodnuvixzdnimqetegolmcyhbpefrlownuqlccmc': 
-         'kfgwarjkyhntqtomxxjbshercozsxrplsulndyabcmpovtyxpaqhkqbyybuoddigwipjfsrjlad',
+#Random test keys
+pairs = { 'zgcueqpwhfxsnaasbhixdnehnodnuvixzdnimqetegolmcyhbpefrlownuqlccmc':
+          'kfgwarjkyhntqtomxxjbshercozsxrplsulndyabcmpovtyxpaqhkqbyybuoddigwipjfsrjlad',
 
-         'fvrmdynxvfntfhriapeqqrmqgoxgthtgerrqcgmfewpvlrrzzbstrtrxlmyvuxjjtjarumynzxgwvwobzlj':
-         'dxtbzsszxvzokkqlarkrxhyqadvghjidecbhrnatgnbnfbeykxciorcmtoenftdmzergtetpcwqxjawtwbr',
+          'fvrmdynxvfntfhriapeqqrmqgoxgthtgerrqcgmfewpvlrrzzbstrtrxlmyvuxjjtjarumynzxgwvwobzlj':
+          'dxtbzsszxvzokkqlarkrxhyqadvghjidecbhrnatgnbnfbeykxciorcmtoenftdmzergtetpcwqxjawtwbr',
 
-         'dalpgicfhxaflrdfgjjmtzzpxqzrreniqnoigdqdfcvlvmikkbnujxnkayfizrrxxwdyfivdyykrtwgznscjrdfjmcaaiqmauamysghbdhrjwvdlrme':
-         'yxwkffkavcuywdryewipqgwyxxmeolqyevwvicsdegeuziewtaktbyrmtefzbrwdisorxcirirq',
-
-         'ltuawoyrlapcmktfgkvisdvnrxwaleygidksikdeqfayhnvxrtixwhynzcylqxliqqxf':
-         'nzrntdhqzxqtjgurxmwnnvhlmlrwbqrsxpoxzccgesjwuirrnjeamyjhkfapvbwkqijjhhmjufkcbwoqxjsfuqkoxibsyxfaftxoeqimvncdgubtsuxypd' }
+          'dalpgicfhxaflrdfgjjmtzzpxqzrreniqnoigdqdfcvlvmikkbnujxnkayfizrrxxwdyfivdyykrtwgznscjrdfjmcaaiqmauamysghbdhrjwvdlrme':
+          'yxwkffkavcuywdryewipqgwyxxmeolqyevwvicsdegeuziewtaktbyrmtefzbrwdisorxcirirq',
+          
+          'ltuawoyrlapcmktfgkvisdvnrxwaleygidksikdeqfayhnvxrtixwhynzcylqxliqqxf':
+          'nzrntdhqzxqtjgurxmwnnvhlmlrwbqrsxpoxzccgesjwuirrnjeamyjhkfapvbwkqijjhhmjufkcbwoqxjsfuqkoxibsyxfaftxoeqimvncdgubtsuxypd' }
 
 rangelist = [('a','ab'),('f','fb'),('m','mb'),('r','rb')]
 
