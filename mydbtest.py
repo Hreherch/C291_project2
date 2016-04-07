@@ -409,7 +409,7 @@ def get_datatype():
         datatype = (db.DB_HASH, None)
         
     elif datatype == 'indexfile':
-        datatype = (db.DB_BTREE, db.DB_BTREE)
+        datatype = (db.DB_BTREE, db.DB_HASH)
         
     elif datatype == "help":
         helpMsg = "Usage: 'mydbtest OPTION'\n" +\
