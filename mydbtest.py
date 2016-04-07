@@ -9,7 +9,7 @@ from bsddb3 import db
 DATABASE = "/tmp/doupton_db/dbdb.db"
 INDEXFILE = "/tmp/doupton_db/index.db"
 DB_SIZE = 100000
-SEED = 1000000
+SEED = 10000000
 
 #=============================================================================
 # Function: create_DB

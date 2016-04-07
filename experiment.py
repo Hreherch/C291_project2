@@ -2,17 +2,18 @@
 from mydbtest import *
 
 #Random test keys
-pairs = { 'bzruwxlxbitkhotzwigevphlktnqiakgqjnlzopjpczqlmnxncjqwpyrlqobbtvydlftxmaghkjdevkumhhjjogqzwaocsqjusrdkzvtwyqsqmqjbvxenyxjztz':
-          'ncpsifrgtiicmlilzsmwvgjxnrwqplvgpqfeogeaballczvijzlfyyjpwlmvngxvgpbtawbnjbprtboc',
+pairs = { 'mfvpyebviinuluphgqfqgiygfdcjxbccgtfvplydpbmzorqxqaxeqglyyzxbeoeouclbddlhyvy':
+          'wecghbenhpygzugmsvgazoulooadcentkpydvxhjavgoevvvczztohydmyzhnlwcdjrdxcubclkfhcmffoujdqqxczxnt',
 
-          'azcqcfilsmervsfnkhfqaanikjxtnyikxcbmiuvftdzvkdcalyeuilmdlclggbfdcznhnuebvwzdeftgkagggmliqbwjpzyymtgvqaurqppk':
-          'ljyssfuvjbjbsdboxnapduturxjnwqdagcddektsjgsqlqllihmewazodravyxlwvqhktqoeydbxsbtgqdwitsdubsczoj',
+          'tkupbpcyldcfzfcqlxcrtaqfjfawftvflqfbeyguxdunksxhodzkfryobcwgpvzwtgyxzhtizpulmikgnltjrauofxmllbuakpkuppoklrqeymeocplriehfb':
+          'wuwcehqqbskaboxtvwmngiexgajwcfbrlshrqsugsboqvitouuorrvxxkcohxsbvskpgoydefmg',
 
-          'xpkyxlyywcsscpeyhbbzgohgbgnjfjfkpxvllvwjkbkjqdmexmgrhniyofxzxlzuwutrjmjlfjixoakdlkytfiljxetbmwjswbogeqp':
-          'niiipgiwdbkeafdekwhcwkcmszavjeyoknlzkamclkzaopdgvihpdbwkrazgatrpwaqcstqdvqwhmwxilkvokmboljzebasiznvjx',
+          'soicnchqepbhyhezmjqchyebhvulbgxyoqtvqlfyjgafpyilzsbasjpiijgytfjdeqxcroudsijbftpaqbtjsiuqvenoouastshmdtqqpujukpednlsghgpzumyvox':
+          'iqgpadwvkdkmuderpkwouiewgzjrdfjjanrvrtiozuqeejodrbqtgauygbcwjxbgmaqg',
 
-          'ltuawoyrlapcmktfgkvisdvnrxwaleygidksikdeqfayhnvxrtixwhynzcylqxliqqxf':
-          'nzrntdhqzxqtjgurxmwnnvhlmlrwbqrsxpoxzccgesjwuirrnjeamyjhkfapvbwkqijjhhmjufkcbwoqxjsfuqkoxibsyxfaftxoeqimvncdgubtsuxypd' }
+          'xgmbjxrifwqpujffxzmqhouhzbnfsisheemcjoxvfzuzpewmppffnlakmkndjronxhhqksvzgzheyjvnwynds':
+          'pdlszbiqpkfwwftxfhafnenpjqbqhagkqhhxwgmxomciileyhjtxuhweycddhwswazk' }
+
 
 rangelist = [('a','ab'),('f','fb'),('m','mb'),('r','rb')]
 
